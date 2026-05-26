@@ -25,8 +25,8 @@ module SlashMigrate
       end
 
       written = migration.write!
-      redirect_to table_path(@table),
-        notice: "Created #{written.join(", ")}. Run the migration to apply it."
+      redirect_to migrations_path,
+        notice: "Created #{written.join(", ")}. Run it below to apply."
     end
 
     def edit
@@ -41,8 +41,8 @@ module SlashMigrate
       head :not_found and return unless column
 
       written = DropColumnMigration.new(table: @table, column: column).write!
-      redirect_to table_path(@table),
-        notice: "Created #{written.join(", ")}. Run the migration to apply it."
+      redirect_to migrations_path,
+        notice: "Created #{written.join(", ")}. Run it below to apply."
     end
 
     def update_preview
@@ -67,8 +67,8 @@ module SlashMigrate
       end
 
       written = migration.write!
-      redirect_to table_path(@table),
-        notice: "Created #{written.join(", ")}. Run the migration to apply it."
+      redirect_to migrations_path,
+        notice: "Created #{written.join(", ")}. Run it below to apply."
     end
 
     private

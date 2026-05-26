@@ -56,7 +56,7 @@ module SlashMigrate
           attributes: [{name: "name", type: "string", null: "", default: "", index: ""}]
         }
 
-        expect(response).to redirect_to("/rails/migrate/models/new")
+        expect(response).to redirect_to("/rails/migrate/migrations")
         expect(flash[:notice]).to match(/create_widgets/)
 
         expect(Dir.glob(Rails.root.join("db/migrate/*_create_widgets.rb"))).not_to be_empty

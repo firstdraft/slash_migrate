@@ -1,0 +1,60 @@
+<div class="sm-page-head">
+  <h1>Migrations</h1>
+  <%= link_to "← All tables", root_path, class: "sm-link" %>
+</div>
+
+<% if flash[:migrate_output].present? %>
+  <label class="sm-label">Output of the last command</label>
+  <pre class="sm-code"><%= flash[:migrate_output] %></pre>
+<% end %>
+
+<div class="sm-panel">
+  <div class="sm-page-head" style="margin-bottom:1rem;">
+    <h2 style="margin:0;">Status</h2>
+    <div style="display:flex; gap:.5rem;">
+      <% if @pending %>
+        <%= button_to "Run pending migrations", run_migrations_path, class: "sm-btn" %>
+      <% end %>
+      <% if @migrations.any?(&:applied?) %>
+        <%= button_to "Roll back last", rollback_migrations_path, class: "sm-btn-ghost",
+              data: { turbo_confirm: "Roll back the most recent migration? This reverses its changes." } %>
+      <% end %>
+    </div>
+  </div>
+
+  <% if @migrations.empty? %>
+    <p class="sm-muted">No migration files yet.</p>
+  <% else %>
+    <table>
+      <thead>
+        <tr><th>Status</th><th>Version</th><th>Migration</th><th></th></tr>
+      </thead>
+      <tbody>
+        <% @migrations.each do |migration| %>
+          <tr>
+            <td>
+              <% if migration.applied? %>
+                <span class="sm-badge">up</span>
+              <% else %>
+                <span class="sm-badge sm-badge-pending">pending</span>
+              <% end %>
+            </td>
+            <td><code><%= migration.version %></code></td>
+            <td><%= migration.name %></td>
+            <td>
+              <% if migration.applied? %>
+                <button type="button" class="sm-btn-ghost" disabled
+                        title="This migration has been run. Roll it back first — deleting its file would orphan the schema_migrations record and leave the change unreversible.">
+                  Delete file
+                </button>
+              <% else %>
+                <%= button_to "Delete file", migration_path(migration.version), method: :delete, class: "sm-btn-ghost",
+                      data: { turbo_confirm: "Delete the “#{migration.name}” migration file? It hasn't been run." } %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</div>

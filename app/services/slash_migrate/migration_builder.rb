@@ -36,12 +36,21 @@ module SlashMigrate
       !name.empty?
     end
 
+    # A model is singular and its table plural, whatever the student typed.
+    # classify and tableize are the same inflections Active Record uses to map
+    # between a model and its table, so "Articles", "articles", and "Article"
+    # all yield the Article model on the articles table.
     def table_name
-      name.underscore.pluralize
+      name.tableize
     end
 
     def model_class_name
-      name.underscore.camelize
+      name.classify
+    end
+
+    # True when the input was plural and we singularized it, so the UI can warn.
+    def pluralized_input?
+      name.present? && name != name.singularize
     end
 
     def migration_class_name
@@ -53,7 +62,7 @@ module SlashMigrate
     end
 
     def model_filename
-      "#{name.underscore}.rb"
+      "#{name.classify.underscore}.rb"
     end
 
     def migration_source

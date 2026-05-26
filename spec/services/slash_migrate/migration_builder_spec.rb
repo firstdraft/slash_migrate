@@ -39,6 +39,29 @@ module SlashMigrate
       end
     end
 
+    describe "name inflection" do
+      it "singularizes a plural input into a model name, keeping the table plural" do
+        builder = described_class.new(name: "Articles")
+
+        expect(builder.model_class_name).to eq("Article")
+        expect(builder.table_name).to eq("articles")
+        expect(builder.migration_class_name).to eq("CreateArticles")
+        expect(builder.model_filename).to eq("article.rb")
+        expect(builder.pluralized_input?).to be(true)
+      end
+
+      it "handles compound and irregular names like Active Record does" do
+        expect(described_class.new(name: "blog_posts").model_class_name).to eq("BlogPost")
+        expect(described_class.new(name: "people").model_class_name).to eq("Person")
+        expect(described_class.new(name: "people").table_name).to eq("people")
+      end
+
+      it "does not warn for an already-singular name" do
+        expect(described_class.new(name: "Article").pluralized_input?).to be(false)
+        expect(described_class.new(name: "article").pluralized_input?).to be(false)
+      end
+    end
+
     # The teaching promise: for columns both can express, our output is exactly
     # what `rails g model` would write. Guards against drift from Rails' style.
     describe "fidelity with rails g model" do
