@@ -42,7 +42,12 @@
             <td><code><%= migration.version %></code></td>
             <td><%= migration.name %></td>
             <td>
-              <% unless migration.applied? %>
+              <% if migration.applied? %>
+                <button type="button" class="sm-btn-ghost" disabled
+                        title="This migration has been run. Roll it back first — deleting its file would orphan the schema_migrations record and leave the change unreversible.">
+                  Delete file
+                </button>
+              <% else %>
                 <%= button_to "Delete file", migration_path(migration.version), method: :delete, class: "sm-btn-ghost",
                       data: { turbo_confirm: "Delete the “#{migration.name}” migration file? It hasn't been run." } %>
               <% end %>
