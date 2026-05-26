@@ -2,8 +2,9 @@ SlashMigrate::Engine.routes.draw do
   root to: "tables#index"
 
   resources :tables, only: [:index, :show] do
-    resources :columns, only: [:new, :create] do
+    resources :columns, only: [:new, :create, :edit], param: :name do
       post :preview, on: :collection
+      post :drop, on: :member
     end
   end
 

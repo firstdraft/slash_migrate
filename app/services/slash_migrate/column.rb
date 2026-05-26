@@ -22,6 +22,22 @@ module SlashMigrate
       )
     end
 
+    # Builds a Column from an Active Record column (the live schema), so the
+    # engine can reconstruct a column's current definition — needed to make a
+    # drop reversible and to pre-fill the edit form.
+    def self.from_schema(ar_column)
+      meta = ar_column.sql_type_metadata
+      new(
+        name: ar_column.name,
+        type: ar_column.type.to_s,
+        null: ar_column.null,
+        default: ar_column.default,
+        limit: meta&.limit,
+        precision: meta&.precision,
+        scale: meta&.scale
+      )
+    end
+
     attr_reader :name, :type, :default, :limit, :precision, :scale, :index
 
     def initialize(name:, type: "string", null: true, default: nil,
@@ -86,6 +102,14 @@ module SlashMigrate
         statement = "add_column :#{table_name}, :#{name}, :#{type}"
       end
       statement += ", #{options.join(", ")}" unless options.empty?
+      statement
+    end
+
+    # remove_column is only reversible when given the column's type; we also
+    # pass the other options so a rollback recreates the column faithfully.
+    def remove_statement(table_name)
+      statement = "remove_column :#{table_name}, :#{name}, :#{type}"
+      statement += ", #{column_options.join(", ")}" unless column_options.empty?
       statement
     end
 

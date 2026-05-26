@@ -29,11 +29,32 @@ module SlashMigrate
         notice: "Created #{written.join(", ")}. Run the migration to apply it."
     end
 
+    def edit
+      @column = find_column
+      head :not_found and return unless @column
+
+      @drop_migration = DropColumnMigration.new(table: @table, column: @column)
+    end
+
+    def drop
+      column = find_column
+      head :not_found and return unless column
+
+      written = DropColumnMigration.new(table: @table, column: column).write!
+      redirect_to table_path(@table),
+        notice: "Created #{written.join(", ")}. Run the migration to apply it."
+    end
+
     private
 
     def require_table
       @table = params[:table_id]
       head :not_found unless inspector.exists?(@table)
+    end
+
+    def find_column
+      ar_column = inspector.table(@table).columns.find { |column| column.name == params[:name] }
+      ar_column && Column.from_schema(ar_column)
     end
 
     def inspector

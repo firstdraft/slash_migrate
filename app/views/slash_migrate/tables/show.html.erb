@@ -14,7 +14,7 @@
 <div class="sm-panel">
   <table>
     <thead>
-      <tr><th>Name</th><th>Type</th><th>Null</th><th>Default</th><th></th></tr>
+      <tr><th>Name</th><th>Type</th><th>Null</th><th>Default</th><th></th><th></th></tr>
     </thead>
     <tbody>
       <% @table.columns.each do |column| %>
@@ -26,6 +26,11 @@
           <td>
             <% if column.name == primary_key %><span class="sm-badge">primary key</span><% end %>
             <% if indexed_columns.include?(column.name) %><span class="sm-badge">indexed</span><% end %>
+          </td>
+          <td>
+            <% unless column.name == primary_key %>
+              <%= link_to "Edit", edit_table_column_path(@table.name, column.name), class: "sm-link" %>
+            <% end %>
           </td>
         </tr>
       <% end %>

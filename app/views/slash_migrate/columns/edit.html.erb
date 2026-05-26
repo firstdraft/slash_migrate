@@ -1,0 +1,17 @@
+<div class="sm-page-head">
+  <h1>Edit <code><%= @column.name %></code> on <code><%= @table %></code></h1>
+  <%= link_to "← Back to #{@table}", table_path(@table), class: "sm-link" %>
+</div>
+
+<div class="sm-panel">
+  <h2>Drop this column</h2>
+  <p class="sm-muted">Generates a migration to remove <code><%= @column.name %></code> from <code><%= @table %></code>.</p>
+
+  <label class="sm-label"><code><%= @drop_migration.migration_class_name %></code></label>
+  <pre class="sm-code"><%= @drop_migration.migration_source %></pre>
+  <p class="sm-muted">✓ Reversible — the column's type is included, so <code>db:rollback</code> re-adds it.</p>
+
+  <%= button_to "Drop #{@column.name}", drop_table_column_path(@table, @column.name),
+        method: :post, class: "sm-btn",
+        data: { turbo_confirm: "Generate a migration to drop #{@column.name}?" } %>
+</div>
