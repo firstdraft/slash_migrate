@@ -35,6 +35,7 @@
     a.sm-link:hover { text-decoration:underline; }
     code { background:#f1f5f9; padding:.1rem .35rem; border-radius:4px; font-size:.85em; }
     .sm-badge { display:inline-block; font-size:.72rem; padding:.1rem .45rem; border-radius:999px; background:#eef2ff; color:var(--accent); }
+    .sm-badge-pending { background:var(--warnbg); color:var(--warn); }
     .sm-muted { color:var(--muted); }
     .sm-empty { color:var(--muted); padding:2rem 0; }
 
@@ -70,6 +71,7 @@
     <span class="sm-tag">development-only migration GUI</span>
     <%= link_to "Tables", root_path, class: "sm-navlink" %>
     <%= link_to "New model", new_model_path, class: "sm-navlink" %>
+    <%= link_to "Migrations", migrations_path, class: "sm-navlink" %>
   </header>
 
   <main>

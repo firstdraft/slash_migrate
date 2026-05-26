@@ -32,8 +32,8 @@ module SlashMigrate
       end
 
       written = builder.write!
-      redirect_to new_model_path,
-        notice: "Created #{written.join(", ")}. Run the migration to apply it."
+      redirect_to migrations_path,
+        notice: "Created #{written.join(", ")}. Run it below to apply."
     end
 
     private
