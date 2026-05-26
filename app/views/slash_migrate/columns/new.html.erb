@@ -1,0 +1,39 @@
+<div class="sm-page-head">
+  <h1>Add columns to <code><%= @table %></code></h1>
+  <%= link_to "← Back to #{@table}", table_path(@table), class: "sm-link" %>
+</div>
+
+<div class="sm-cols">
+  <div class="sm-panel">
+    <%= form_with url: table_columns_path(@table), method: :post,
+          data: {
+            controller: "model-form",
+            action: "input->model-form#scheduleRefresh change->model-form#scheduleRefresh",
+            "model-form-preview-url-value": preview_table_columns_path(@table)
+          } do |form| %>
+
+      <label class="sm-label">New columns</label>
+      <div data-model-form-target="rows">
+        <%= render "slash_migrate/models/row", tables: @existing_tables %>
+      </div>
+
+      <template data-model-form-target="template">
+        <%= render "slash_migrate/models/row", tables: @existing_tables %>
+      </template>
+
+      <div style="margin-top:.5rem;">
+        <button type="button" class="sm-btn-ghost" data-action="model-form#addRow">+ Add column</button>
+      </div>
+
+      <div style="margin-top:1rem;">
+        <%= form.submit "Add to #{@table}", class: "sm-btn" %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="sm-panel sm-preview-panel">
+    <div id="sm-preview">
+      <%= render "preview" %>
+    </div>
+  </div>
+</div>

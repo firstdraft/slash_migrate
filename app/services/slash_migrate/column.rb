@@ -75,6 +75,20 @@ module SlashMigrate
       statement
     end
 
+    # The standalone statement that adds this column to an existing table,
+    # reusing the same option rendering as the create_table line.
+    def add_statement(table_name)
+      if reference?
+        options = reference_options
+        statement = "add_reference :#{table_name}, :#{name}"
+      else
+        options = column_options
+        statement = "add_column :#{table_name}, :#{name}, :#{type}"
+      end
+      statement += ", #{options.join(", ")}" unless options.empty?
+      statement
+    end
+
     def belongs_to_line
       if conventional_reference?
         "belongs_to :#{name}"

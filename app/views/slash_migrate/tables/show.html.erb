@@ -5,7 +5,10 @@
 %>
 
 <p class="sm-muted"><%= link_to "← All tables", root_path, class: "sm-link" %></p>
-<h1><code><%= @table.name %></code></h1>
+<div class="sm-page-head">
+  <h1><code><%= @table.name %></code></h1>
+  <%= link_to "+ Add columns", new_table_column_path(@table.name), class: "sm-btn-ghost" %>
+</div>
 
 <h2>Columns</h2>
 <div class="sm-panel">
