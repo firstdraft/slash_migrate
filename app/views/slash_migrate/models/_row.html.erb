@@ -1,12 +1,18 @@
 <div class="sm-row" data-row>
   <input type="text" name="attributes[][name]" placeholder="column name"
          class="sm-input sm-row-name" autocomplete="off">
-  <select name="attributes[][type]" class="sm-input">
-    <% SlashMigrate::ModelGenerator::TYPES.each do |type| %>
+  <select name="attributes[][type]" class="sm-input sm-row-type">
+    <% SlashMigrate::Column::TYPES.each do |type| %>
       <option value="<%= type %>"><%= type %></option>
     <% end %>
   </select>
-  <select name="attributes[][index]" class="sm-input">
+  <select name="attributes[][null]" class="sm-input sm-row-null" title="Nullability">
+    <option value="">allow null</option>
+    <option value="not_null">NOT NULL</option>
+  </select>
+  <input type="text" name="attributes[][default]" placeholder="default"
+         class="sm-input sm-row-default" autocomplete="off">
+  <select name="attributes[][index]" class="sm-input sm-row-index" title="Index">
     <option value="">no index</option>
     <option value="index">index</option>
     <option value="uniq">unique</option>
