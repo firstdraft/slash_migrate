@@ -120,11 +120,10 @@ module SlashMigrate
     end
 
     def belongs_to_line
-      if conventional_reference?
-        "belongs_to :#{name}"
-      else
-        "belongs_to :#{name}, class_name: #{target_table.classify.inspect}"
-      end
+      options = []
+      options << "class_name: #{target_table.classify.inspect}" unless conventional_reference?
+      options << requiredness_option if requiredness_option
+      options.empty? ? "belongs_to :#{name}" : "belongs_to :#{name}, #{options.join(", ")}"
     end
 
     private
@@ -151,6 +150,19 @@ module SlashMigrate
 
     def conventional_reference?
       target_table == name.pluralize
+    end
+
+    # Keep the association's optionality in step with the column's nullability:
+    # a nullable column should be an optional belongs_to, a NOT NULL one
+    # required. We only state it when it differs from the app's
+    # belongs_to_required_by_default, so the generated model matches that app's
+    # conventions rather than hard-coding one.
+    def requiredness_option
+      desired_required = !allow_null?
+      default_required = !!ActiveRecord::Base.belongs_to_required_by_default
+      return nil if desired_required == default_required
+
+      desired_required ? "required: true" : "optional: true"
     end
 
     def column_options

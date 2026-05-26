@@ -54,13 +54,42 @@ module SlashMigrate
       it "stays conventional when the pick matches the column name" do
         col = column(name: "author", type: "references", to_table: "authors")
         expect(col.to_ruby).to eq("t.references :author, foreign_key: true")
-        expect(col.belongs_to_line).to eq("belongs_to :author")
       end
 
       it "is conventional when no table is picked" do
         col = column(name: "user", type: "references")
         expect(col.to_ruby).to eq("t.references :user, foreign_key: true")
-        expect(col.belongs_to_line).to eq("belongs_to :user")
+      end
+    end
+
+    describe "#belongs_to_line optionality" do
+      it "marks a nullable reference optional to match the column" do
+        expect(column(name: "user", type: "references", null: true).belongs_to_line)
+          .to eq("belongs_to :user, optional: true")
+      end
+
+      it "leaves a NOT NULL reference required, with no override needed by default" do
+        expect(column(name: "user", type: "references", null: false).belongs_to_line)
+          .to eq("belongs_to :user")
+      end
+
+      it "combines class_name and optional for a nullable, differently-named reference" do
+        expect(column(name: "author", type: "references", null: true, to_table: "users").belongs_to_line)
+          .to eq('belongs_to :author, class_name: "User", optional: true')
+      end
+
+      context "when the app does not require belongs_to by default" do
+        before { allow(ActiveRecord::Base).to receive(:belongs_to_required_by_default).and_return(false) }
+
+        it "states required: true for a NOT NULL reference" do
+          expect(column(name: "user", type: "references", null: false).belongs_to_line)
+            .to eq("belongs_to :user, required: true")
+        end
+
+        it "leaves a nullable reference as-is, with no override needed" do
+          expect(column(name: "user", type: "references", null: true).belongs_to_line)
+            .to eq("belongs_to :user")
+        end
       end
     end
 
