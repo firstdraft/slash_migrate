@@ -72,4 +72,8 @@ Rails.application.configure do
 
   # Raise error when a before_action's only/except options reference missing actions.
   config.action_controller.raise_on_missing_callback_actions = true
+
+  # This dummy app exists to smoke-test the engine; migrations run against it are
+  # throwaway, so don't rewrite the committed schema.rb fixture each time.
+  config.active_record.dump_schema_after_migration = false
 end

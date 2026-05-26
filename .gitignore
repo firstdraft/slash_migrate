@@ -9,3 +9,12 @@
 /spec/dummy/storage/
 /spec/dummy/tmp/
 .learning-moments/
+
+# Migrations and models the GUI generates while smoke-testing against the
+# dummy app are throwaway. Ignore them so they aren't committed by accident;
+# the deliberate fixtures below stay tracked.
+/spec/dummy/db/migrate/*
+!/spec/dummy/db/migrate/20260526000001_create_sample_schema.rb
+/spec/dummy/app/models/*
+!/spec/dummy/app/models/application_record.rb
+!/spec/dummy/app/models/concerns
