@@ -27,7 +27,7 @@
   <% else %>
     <table>
       <thead>
-        <tr><th>Status</th><th>Version</th><th>Migration</th></tr>
+        <tr><th>Status</th><th>Version</th><th>Migration</th><th></th></tr>
       </thead>
       <tbody>
         <% @migrations.each do |migration| %>
@@ -41,6 +41,12 @@
             </td>
             <td><code><%= migration.version %></code></td>
             <td><%= migration.name %></td>
+            <td>
+              <% unless migration.applied? %>
+                <%= button_to "Delete file", migration_path(migration.version), method: :delete, class: "sm-btn-ghost",
+                      data: { turbo_confirm: "Delete the “#{migration.name}” migration file? It hasn't been run." } %>
+              <% end %>
+            </td>
           </tr>
         <% end %>
       </tbody>

@@ -30,6 +30,36 @@ module SlashMigrate
       end
     end
 
+    describe "#delete" do
+      let(:path) { Rails.root.join("db/migrate/29990202000000_remove_me.rb") }
+
+      after { File.delete(path) if File.exist?(path) }
+
+      it "deletes a pending migration file" do
+        File.write(path, "class RemoveMe < ActiveRecord::Migration[8.1]\n  def change\n  end\nend\n")
+
+        result = runner.delete("29990202000000")
+
+        expect(result).to be_success
+        expect(File.exist?(path)).to be(false)
+      end
+
+      it "refuses to delete a migration that has already been run" do
+        result = runner.delete("20260526000001")
+
+        expect(result).not_to be_success
+        expect(result.output).to match(/already been run/)
+        expect(File.exist?(Rails.root.join("db/migrate/20260526000001_create_sample_schema.rb"))).to be(true)
+      end
+
+      it "reports an unknown version without deleting anything" do
+        result = runner.delete("11111111111111")
+
+        expect(result).not_to be_success
+        expect(result.output).to match(/No migration/)
+      end
+    end
+
     describe "#migrate" do
       it "shells out to bin/rails db:migrate, anchored to the host app, and captures output" do
         captured = nil

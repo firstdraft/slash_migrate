@@ -18,6 +18,7 @@ SlashMigrate::Engine.routes.draw do
   get "migrations", to: "migrations#index", as: :migrations
   post "migrations/run", to: "migrations#run", as: :run_migrations
   post "migrations/rollback", to: "migrations#rollback", as: :rollback_migrations
+  delete "migrations/:version", to: "migrations#destroy", as: :migration, constraints: {version: /\d+/}
 
   # The engine serves its own JS/CSS so it never depends on the host app's asset
   # pipeline (importmap / esbuild / Sprockets / Propshaft). See AssetsController.

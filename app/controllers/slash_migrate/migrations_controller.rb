@@ -13,6 +13,12 @@ module SlashMigrate
       finish(runner.rollback, "Rolled back the last migration.")
     end
 
+    def destroy
+      result = runner.delete(params[:version])
+      flash[result.success? ? :notice : :alert] = result.output
+      redirect_to migrations_path
+    end
+
     private
 
     def runner

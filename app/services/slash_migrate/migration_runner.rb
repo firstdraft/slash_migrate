@@ -42,6 +42,23 @@ module SlashMigrate
       run("db:rollback")
     end
 
+    # Deletes a migration file, but only when it hasn't been run (pending, or
+    # already rolled back). Deleting an applied migration would orphan its
+    # schema_migrations row and leave it unreversible, so we refuse.
+    def delete(version)
+      version = version.to_s
+      migration = status.find { |candidate| candidate.version == version }
+
+      return Result.new(output: "No migration #{version} found.", success: false) unless migration
+      if migration.applied?
+        return Result.new(output: "“#{migration.name}” has already been run — roll it back before deleting.", success: false)
+      end
+
+      path = migration_files.find { |file| File.basename(file).start_with?("#{version}_") }
+      File.delete(path) if path
+      Result.new(output: "Deleted “#{migration.name}”.", success: true)
+    end
+
     private
 
     def run(task)
