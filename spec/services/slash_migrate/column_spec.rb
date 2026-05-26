@@ -44,6 +44,26 @@ module SlashMigrate
       end
     end
 
+    describe "references pointing at a differently-named table" do
+      it "emits foreign_key: { to_table: } when the pick doesn't match the column name" do
+        col = column(name: "author", type: "references", null: false, to_table: "users")
+        expect(col.to_ruby).to eq("t.references :author, null: false, foreign_key: { to_table: :users }")
+        expect(col.belongs_to_line).to eq('belongs_to :author, class_name: "User"')
+      end
+
+      it "stays conventional when the pick matches the column name" do
+        col = column(name: "author", type: "references", to_table: "authors")
+        expect(col.to_ruby).to eq("t.references :author, foreign_key: true")
+        expect(col.belongs_to_line).to eq("belongs_to :author")
+      end
+
+      it "is conventional when no table is picked" do
+        col = column(name: "user", type: "references")
+        expect(col.to_ruby).to eq("t.references :user, foreign_key: true")
+        expect(col.belongs_to_line).to eq("belongs_to :user")
+      end
+    end
+
     describe "indexing" do
       it "marks plain columns as indexed and builds the statement" do
         slug = column(name: "slug", index: "uniq")

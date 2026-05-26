@@ -17,14 +17,15 @@ module SlashMigrate
         type: row[:type],
         null: row[:null].to_s != "not_null",
         default: row[:default],
-        index: row[:index]
+        index: row[:index],
+        to_table: row[:to_table]
       )
     end
 
     attr_reader :name, :type, :default, :limit, :precision, :scale, :index
 
     def initialize(name:, type: "string", null: true, default: nil,
-      limit: nil, precision: nil, scale: nil, index: "", foreign_key: true)
+      limit: nil, precision: nil, scale: nil, index: "", foreign_key: true, to_table: nil)
       @name = name.to_s.strip
       @type = type.to_s
       @null = null
@@ -34,6 +35,7 @@ module SlashMigrate
       @scale = presence(scale)
       @index = index.to_s
       @foreign_key = foreign_key
+      @to_table = presence(to_table)
     end
 
     def blank?
@@ -74,7 +76,11 @@ module SlashMigrate
     end
 
     def belongs_to_line
-      "belongs_to :#{name}"
+      if conventional_reference?
+        "belongs_to :#{name}"
+      else
+        "belongs_to :#{name}, class_name: #{target_table.classify.inspect}"
+      end
     end
 
     private
@@ -87,8 +93,20 @@ module SlashMigrate
     def reference_options
       options = []
       options << "null: false" unless allow_null?
-      options << "foreign_key: true" if foreign_key?
+      if foreign_key?
+        options << (conventional_reference? ? "foreign_key: true" : "foreign_key: { to_table: :#{target_table} }")
+      end
       options
+    end
+
+    # The table this reference points at: the explicit pick, or Rails' default
+    # inference from the column name when left blank.
+    def target_table
+      @to_table || name.pluralize
+    end
+
+    def conventional_reference?
+      target_table == name.pluralize
     end
 
     def column_options

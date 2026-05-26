@@ -18,11 +18,11 @@
 
       <label class="sm-label" style="margin-top:1.25rem;">Columns</label>
       <div data-model-form-target="rows">
-        <%= render "row" %>
+        <%= render "row", tables: @existing_tables %>
       </div>
 
       <template data-model-form-target="template">
-        <%= render "row" %>
+        <%= render "row", tables: @existing_tables %>
       </template>
 
       <div style="margin-top:.5rem;">

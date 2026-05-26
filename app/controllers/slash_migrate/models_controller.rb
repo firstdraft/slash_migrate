@@ -2,6 +2,7 @@ module SlashMigrate
   class ModelsController < ApplicationController
     def new
       @builder = MigrationBuilder.new(name: "")
+      @existing_tables = inspector.table_names
     end
 
     # Live preview: rebuilds the migration + model source on every (debounced)

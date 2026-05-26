@@ -1,7 +1,7 @@
 <div class="sm-row" data-row>
   <input type="text" name="attributes[][name]" placeholder="column name"
          class="sm-input sm-row-name" autocomplete="off">
-  <select name="attributes[][type]" class="sm-input sm-row-type">
+  <select name="attributes[][type]" class="sm-input sm-row-type" data-action="model-form#typeChanged">
     <% SlashMigrate::Column::TYPES.each do |type| %>
       <option value="<%= type %>"><%= type %></option>
     <% end %>
@@ -11,7 +11,15 @@
     <option value="not_null">NOT NULL</option>
   </select>
   <input type="text" name="attributes[][default]" placeholder="default"
-         class="sm-input sm-row-default" autocomplete="off">
+         class="sm-input sm-row-default" autocomplete="off" data-row-default>
+  <%# Shown only for reference columns (Stimulus toggles it with the default field). %>
+  <select name="attributes[][to_table]" class="sm-input sm-row-table" title="References which table?"
+          data-row-table style="display:none">
+    <option value="">references (matches name)</option>
+    <% Array(tables).each do |table| %>
+      <option value="<%= table %>">→ <%= table %></option>
+    <% end %>
+  </select>
   <select name="attributes[][index]" class="sm-input sm-row-index" title="Index">
     <option value="">no index</option>
     <option value="index">index</option>
