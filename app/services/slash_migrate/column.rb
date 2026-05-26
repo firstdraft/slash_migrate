@@ -113,6 +113,12 @@ module SlashMigrate
       statement
     end
 
+    # The default rendered as a Ruby literal (or "nil"), for change_column_default's
+    # from:/to: arguments.
+    def default_sql
+      @default.nil? ? "nil" : rendered_default
+    end
+
     def belongs_to_line
       if conventional_reference?
         "belongs_to :#{name}"

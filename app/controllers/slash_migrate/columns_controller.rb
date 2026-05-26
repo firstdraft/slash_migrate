@@ -45,6 +45,32 @@ module SlashMigrate
         notice: "Created #{written.join(", ")}. Run the migration to apply it."
     end
 
+    def update_preview
+      original = find_column
+      @migration = original && EditColumnMigration.new(table: @table, original: original, desired: desired_column)
+      @hint = "Change a value to see the migration it will generate." unless @migration&.changed?
+      render :update_preview, layout: false
+    rescue => e
+      @error = e.message
+      render :update_preview, layout: false
+    end
+
+    def update
+      original = find_column
+      head :not_found and return unless original
+
+      migration = EditColumnMigration.new(table: @table, original: original, desired: desired_column)
+
+      unless migration.changed?
+        redirect_to(edit_table_column_path(@table, params[:name]), alert: "No changes to apply.")
+        return
+      end
+
+      written = migration.write!
+      redirect_to table_path(@table),
+        notice: "Created #{written.join(", ")}. Run the migration to apply it."
+    end
+
     private
 
     def require_table
@@ -55,6 +81,10 @@ module SlashMigrate
     def find_column
       ar_column = inspector.table(@table).columns.find { |column| column.name == params[:name] }
       ar_column && Column.from_schema(ar_column)
+    end
+
+    def desired_column
+      Column.from_params(params.fetch(:column, {}))
     end
 
     def inspector
