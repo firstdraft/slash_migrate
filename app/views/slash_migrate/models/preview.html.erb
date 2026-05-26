@@ -1,0 +1,6 @@
+<%# Rendered as a Turbo Stream message and applied client-side via
+    Turbo.renderStreamMessage. We emit the <turbo-stream> element by hand so the
+    engine needs neither the turbo-rails gem nor a registered MIME type. %>
+<turbo-stream action="update" target="sm-preview">
+  <template><%= render "preview" %></template>
+</turbo-stream>

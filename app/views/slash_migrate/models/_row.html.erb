@@ -1,0 +1,15 @@
+<div class="sm-row" data-row>
+  <input type="text" name="attributes[][name]" placeholder="column name"
+         class="sm-input sm-row-name" autocomplete="off">
+  <select name="attributes[][type]" class="sm-input">
+    <% SlashMigrate::ModelGenerator::TYPES.each do |type| %>
+      <option value="<%= type %>"><%= type %></option>
+    <% end %>
+  </select>
+  <select name="attributes[][index]" class="sm-input">
+    <option value="">no index</option>
+    <option value="index">index</option>
+    <option value="uniq">unique</option>
+  </select>
+  <button type="button" class="sm-icon-btn" data-action="model-form#removeRow" title="Remove column">&times;</button>
+</div>

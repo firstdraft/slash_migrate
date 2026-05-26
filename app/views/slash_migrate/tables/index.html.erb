@@ -1,0 +1,23 @@
+<h1>Tables</h1>
+
+<% if @table_names.empty? %>
+  <div class="sm-panel sm-empty">
+    No tables yet. Once you create a model, it will show up here.
+  </div>
+<% else %>
+  <div class="sm-panel">
+    <table>
+      <thead>
+        <tr><th>Table</th><th></th></tr>
+      </thead>
+      <tbody>
+        <% @table_names.each do |name| %>
+          <tr>
+            <td><code><%= name %></code></td>
+            <td><%= link_to "Inspect →", table_path(name), class: "sm-link" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

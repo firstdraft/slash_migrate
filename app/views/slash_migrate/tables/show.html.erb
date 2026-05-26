@@ -1,0 +1,75 @@
+<%
+  primary_key = @table.primary_key
+  indexes = @table.indexes
+  indexed_columns = indexes.flat_map(&:columns).uniq
+%>
+
+<p class="sm-muted"><%= link_to "← All tables", root_path, class: "sm-link" %></p>
+<h1><code><%= @table.name %></code></h1>
+
+<h2>Columns</h2>
+<div class="sm-panel">
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Type</th><th>Null</th><th>Default</th><th></th></tr>
+    </thead>
+    <tbody>
+      <% @table.columns.each do |column| %>
+        <tr>
+          <td><code><%= column.name %></code></td>
+          <td><%= column.type %> <span class="sm-muted">(<%= column.sql_type %>)</span></td>
+          <td><%= column.null ? "" : content_tag(:span, "NOT NULL", class: "sm-badge") %></td>
+          <td><%= column.default.nil? ? content_tag(:span, "—", class: "sm-muted") : tag.code(column.default) %></td>
+          <td>
+            <% if column.name == primary_key %><span class="sm-badge">primary key</span><% end %>
+            <% if indexed_columns.include?(column.name) %><span class="sm-badge">indexed</span><% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<h2>Indexes</h2>
+<div class="sm-panel">
+  <% if indexes.empty? %>
+    <span class="sm-muted">No indexes.</span>
+  <% else %>
+    <table>
+      <thead>
+        <tr><th>Name</th><th>Columns</th><th>Unique</th></tr>
+      </thead>
+      <tbody>
+        <% indexes.each do |index| %>
+          <tr>
+            <td><code><%= index.name %></code></td>
+            <td><%= Array(index.columns).join(", ") %></td>
+            <td><%= index.unique ? content_tag(:span, "unique", class: "sm-badge") : "" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</div>
+
+<h2>Foreign keys</h2>
+<div class="sm-panel">
+  <% if @table.foreign_keys.empty? %>
+    <span class="sm-muted">No foreign keys.</span>
+  <% else %>
+    <table>
+      <thead>
+        <tr><th>Column</th><th>References</th><th>Name</th></tr>
+      </thead>
+      <tbody>
+        <% @table.foreign_keys.each do |fk| %>
+          <tr>
+            <td><code><%= fk.column %></code></td>
+            <td><code><%= fk.to_table %></code></td>
+            <td class="sm-muted"><%= fk.name %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</div>

@@ -1,0 +1,13 @@
+<% if @error.present? %>
+  <div class="sm-note sm-note-warn"><%= @error %></div>
+<% elsif @files.blank? %>
+  <p class="sm-muted"><%= @hint || "Enter a model name to see the migration it will generate." %></p>
+<% else %>
+  <label class="sm-label">Equivalent command</label>
+  <pre class="sm-code sm-cmd"><%= @generator.cli_command %></pre>
+
+  <% @files.each do |file| %>
+    <label class="sm-label"><code><%= file.relative_path %></code></label>
+    <pre class="sm-code"><%= file.content %></pre>
+  <% end %>
+<% end %>
