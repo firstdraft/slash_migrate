@@ -9,6 +9,15 @@
     </div>
   <% end %>
 
+  <% if @builder.pluralized_input? %>
+    <div class="sm-note sm-note-warn">
+      Model names are singular, so this generates <code><%= @builder.model_class_name %></code> on the
+      <code><%= @builder.table_name %></code> table. If you really want a model named after the plural, teach
+      Rails that inflection in <code>config/initializers/inflections.rb</code> — see
+      <%= link_to "the inflections guide", "https://guides.rubyonrails.org/active_support_core_extensions.html#inflections", target: "_blank", rel: "noopener" %>.
+    </div>
+  <% end %>
+
   <label class="sm-label"><code>db/migrate/…_create_<%= @builder.table_name %>.rb</code></label>
   <pre class="sm-code"><%= @builder.migration_source %></pre>
 
