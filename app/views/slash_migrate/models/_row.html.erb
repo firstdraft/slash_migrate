@@ -16,6 +16,7 @@
   <select name="attributes[][to_table]" class="sm-input sm-row-table" title="References which table?"
           data-row-table style="display:none">
     <option value="">references (matches name)</option>
+    <option value="<%= SlashMigrate::MigrationBuilder::SELF_TABLE %>">→ (this table)</option>
     <% Array(tables).each do |table| %>
       <option value="<%= table %>">→ <%= table %></option>
     <% end %>

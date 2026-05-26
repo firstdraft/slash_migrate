@@ -61,6 +61,17 @@ module SlashMigrate
       end
     end
 
+    describe "self-references via .from_params" do
+      it "resolves the (this table) sentinel to the table being created" do
+        builder = described_class.from_params(name: "Employee", rows: [
+          {name: "manager", type: "references", null: "not_null", default: "", index: "", to_table: described_class::SELF_TABLE}
+        ])
+
+        expect(builder.migration_source).to include("t.references :manager, null: false, foreign_key: { to_table: :employees }")
+        expect(builder.model_source).to include('belongs_to :manager, class_name: "Employee"')
+      end
+    end
+
     describe "#write!" do
       after do
         Dir.glob(Rails.root.join("db/migrate/*_create_widgets.rb")).each { |f| File.delete(f) }

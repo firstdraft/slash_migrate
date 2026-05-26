@@ -7,9 +7,22 @@ module SlashMigrate
   # Fidelity with Rails' own output is guarded by a spec that diffs this against
   # `rails g model` for the subset both can express.
   class MigrationBuilder
+    # The "references table" picker uses this sentinel for a self-reference,
+    # since the table being created doesn't exist to list yet. We resolve it to
+    # the new table's name here, where it's known.
+    SELF_TABLE = "__self__".freeze
+
     def self.from_params(name:, rows:)
-      columns = Array(rows).map { |row| Column.from_params(row) }
+      table = name.to_s.strip.underscore.pluralize
+      columns = Array(rows).map { |row| Column.from_params(resolve_self_reference(row, table)) }
       new(name: name, columns: columns)
+    end
+
+    def self.resolve_self_reference(row, table)
+      return row unless row[:to_table].to_s == SELF_TABLE
+
+      hash = row.respond_to?(:to_unsafe_h) ? row.to_unsafe_h : row.to_h
+      hash.symbolize_keys.merge(to_table: table)
     end
 
     attr_reader :name
