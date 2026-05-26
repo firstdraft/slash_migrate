@@ -5,13 +5,16 @@
 %>
 
 <p class="sm-muted"><%= link_to "← All tables", root_path, class: "sm-link" %></p>
-<h1><code><%= @table.name %></code></h1>
+<div class="sm-page-head">
+  <h1><code><%= @table.name %></code></h1>
+  <%= link_to "+ Add columns", new_table_column_path(@table.name), class: "sm-btn-ghost" %>
+</div>
 
 <h2>Columns</h2>
 <div class="sm-panel">
   <table>
     <thead>
-      <tr><th>Name</th><th>Type</th><th>Null</th><th>Default</th><th></th></tr>
+      <tr><th>Name</th><th>Type</th><th>Null</th><th>Default</th><th></th><th></th></tr>
     </thead>
     <tbody>
       <% @table.columns.each do |column| %>
@@ -23,6 +26,11 @@
           <td>
             <% if column.name == primary_key %><span class="sm-badge">primary key</span><% end %>
             <% if indexed_columns.include?(column.name) %><span class="sm-badge">indexed</span><% end %>
+          </td>
+          <td>
+            <% unless column.name == primary_key %>
+              <%= link_to "Edit", edit_table_column_path(@table.name, column.name), class: "sm-link" %>
+            <% end %>
           </td>
         </tr>
       <% end %>

@@ -1,0 +1,58 @@
+<div class="sm-page-head">
+  <h1>Edit <code><%= @column.name %></code> on <code><%= @table %></code></h1>
+  <%= link_to "← Back to #{@table}", table_path(@table), class: "sm-link" %>
+</div>
+
+<div class="sm-cols">
+  <div class="sm-panel">
+    <%= form_with url: table_column_path(@table, @column.name), method: :patch,
+          data: {
+            controller: "live-preview",
+            action: "input->live-preview#scheduleRefresh change->live-preview#scheduleRefresh",
+            "live-preview-url-value": update_preview_table_column_path(@table, @column.name)
+          } do |form| %>
+
+      <label class="sm-label">Name</label>
+      <input type="text" name="column[name]" value="<%= @column.name %>" class="sm-input" autocomplete="off">
+
+      <label class="sm-label" style="margin-top:1rem;">Type</label>
+      <select name="column[type]" class="sm-input">
+        <% SlashMigrate::Column::TYPES.each do |type| %>
+          <option value="<%= type %>" <%= "selected" if type == @column.type %>><%= type %></option>
+        <% end %>
+      </select>
+
+      <label class="sm-label" style="margin-top:1rem;">Nullability</label>
+      <select name="column[null]" class="sm-input">
+        <option value="" <%= "selected" if @column.allow_null? %>>allow null</option>
+        <option value="not_null" <%= "selected" unless @column.allow_null? %>>NOT NULL</option>
+      </select>
+
+      <label class="sm-label" style="margin-top:1rem;">Default</label>
+      <input type="text" name="column[default]" value="<%= @column.default %>" placeholder="(none)" class="sm-input" autocomplete="off">
+
+      <div style="margin-top:1.25rem;">
+        <%= form.submit "Save changes", class: "sm-btn" %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="sm-panel sm-preview-panel">
+    <div id="sm-edit-preview">
+      <%= render "update_preview" %>
+    </div>
+  </div>
+</div>
+
+<div class="sm-panel" style="margin-top:1.5rem;">
+  <h2>Drop this column</h2>
+  <p class="sm-muted">Generates a migration to remove <code><%= @column.name %></code> from <code><%= @table %></code>.</p>
+
+  <label class="sm-label"><code><%= @drop_migration.migration_class_name %></code></label>
+  <pre class="sm-code"><%= @drop_migration.migration_source %></pre>
+  <p class="sm-muted">✓ Reversible — the column's type is included, so <code>db:rollback</code> re-adds it.</p>
+
+  <%= button_to "Drop #{@column.name}", drop_table_column_path(@table, @column.name),
+        method: :post, class: "sm-btn",
+        data: { turbo_confirm: "Generate a migration to drop #{@column.name}?" } %>
+</div>

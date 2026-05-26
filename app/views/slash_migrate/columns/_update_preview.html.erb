@@ -1,0 +1,20 @@
+<% if @error.present? %>
+  <div class="sm-note sm-note-warn"><%= @error %></div>
+<% elsif @migration.nil? || !@migration.changed? %>
+  <p class="sm-muted"><%= @hint || "Change a value to see the migration it will generate." %></p>
+<% else %>
+  <label class="sm-label"><code><%= @migration.migration_class_name %></code></label>
+  <pre class="sm-code"><%= @migration.migration_source %></pre>
+
+  <% if @migration.reversible_as_change? %>
+    <p class="sm-muted">✓ Reversible — a rename rolls back cleanly with <code>db:rollback</code>.</p>
+  <% else %>
+    <p class="sm-muted">A type change isn't auto-reversible, so this is written as explicit <code>up</code>/<code>down</code>.</p>
+  <% end %>
+
+  <% if @migration.tightening_null? %>
+    <div class="sm-note sm-note-warn">
+      Adding <code>NOT NULL</code> will fail if existing rows hold NULL — backfill them (or set a default) first.
+    </div>
+  <% end %>
+<% end %>

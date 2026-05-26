@@ -1,16 +1,21 @@
 module SlashMigrate
   class ModelsController < ApplicationController
     def new
-      @generator = ModelGenerator.new(name: "")
+      @builder = MigrationBuilder.new(name: "")
+      @existing_tables = inspector.table_names
     end
 
-    # Live preview: re-runs on every (debounced) form change and streams the
-    # generated migration + model back into the preview pane. Generation runs in
-    # a temp dir, so nothing is written until the student explicitly creates.
+    # Live preview: rebuilds the migration + model source on every (debounced)
+    # form change and streams it back. Pure string building, no disk writes.
     def preview
-      @generator = build_generator
-      @hint = "Enter a model name to see the migration it will generate." if @generator.name.blank?
-      @files = @generator.preview if @generator.name.present?
+      @builder = build_builder
+
+      if @builder.name_present?
+        @table_exists = inspector.exists?(@builder.table_name)
+      else
+        @hint = "Enter a model name to see the migration it will generate."
+      end
+
       render :preview, layout: false
     rescue => e
       # Partial/invalid input shouldn't 500 the live preview; show the problem.
@@ -19,22 +24,26 @@ module SlashMigrate
     end
 
     def create
-      generator = build_generator
-      @files = generator.create!
+      builder = build_builder
+
+      if inspector.exists?(builder.table_name)
+        redirect_to(new_model_path, alert: "A table named #{builder.table_name} already exists.")
+        return
+      end
+
+      written = builder.write!
       redirect_to new_model_path,
-        notice: "Created #{@files.map(&:relative_path).join(", ")}. Run the migration to apply it."
+        notice: "Created #{written.join(", ")}. Run the migration to apply it."
     end
 
     private
 
-    def build_generator
-      ModelGenerator.from_params(name: params[:model_name], attributes: attribute_params)
+    def build_builder
+      MigrationBuilder.from_params(name: params[:model_name], rows: params[:attributes])
     end
 
-    def attribute_params
-      Array(params[:attributes]).map do |attr|
-        {name: attr[:name], type: attr[:type], index: attr[:index]}
-      end
+    def inspector
+      @inspector ||= SchemaInspector.new
     end
   end
 end

@@ -1,13 +1,17 @@
 <% if @error.present? %>
   <div class="sm-note sm-note-warn"><%= @error %></div>
-<% elsif @files.blank? %>
+<% elsif !@builder.name_present? %>
   <p class="sm-muted"><%= @hint || "Enter a model name to see the migration it will generate." %></p>
 <% else %>
-  <label class="sm-label">Equivalent command</label>
-  <pre class="sm-code sm-cmd"><%= @generator.cli_command %></pre>
-
-  <% @files.each do |file| %>
-    <label class="sm-label"><code><%= file.relative_path %></code></label>
-    <pre class="sm-code"><%= file.content %></pre>
+  <% if @table_exists %>
+    <div class="sm-note sm-note-warn">
+      A table named <code><%= @builder.table_name %></code> already exists — creating it would add a duplicate migration.
+    </div>
   <% end %>
+
+  <label class="sm-label"><code>db/migrate/…_create_<%= @builder.table_name %>.rb</code></label>
+  <pre class="sm-code"><%= @builder.migration_source %></pre>
+
+  <label class="sm-label"><code>app/models/<%= @builder.model_filename %></code></label>
+  <pre class="sm-code"><%= @builder.model_source %></pre>
 <% end %>

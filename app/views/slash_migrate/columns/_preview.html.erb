@@ -1,0 +1,9 @@
+<% if @error.present? %>
+  <div class="sm-note sm-note-warn"><%= @error %></div>
+<% elsif !@migration.any? %>
+  <p class="sm-muted"><%= @hint || "Add a column to see the migration it will generate." %></p>
+<% else %>
+  <label class="sm-label"><code><%= @migration.migration_class_name %></code></label>
+  <pre class="sm-code"><%= @migration.migration_source %></pre>
+  <p class="sm-muted">✓ Reversible — <code>add_column</code> rolls back cleanly with <code>db:rollback</code>.</p>
+<% end %>
