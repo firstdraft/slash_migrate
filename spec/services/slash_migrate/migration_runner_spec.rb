@@ -5,12 +5,21 @@ module SlashMigrate
     subject(:runner) { described_class.new }
 
     describe "#status / #pending?" do
-      it "reports the applied sample migration as up, with nothing pending" do
+      it "reports the applied sample migration as up" do
         sample = runner.status.find { |migration| migration.version == "20260526000001" }
 
         expect(sample).to be_present
         expect(sample.applied?).to be(true)
         expect(sample.name).to eq("Create sample schema")
+      end
+
+      # pending? against the real db/migrate dir is fragile — the dummy app
+      # accumulates throwaway migrations as the engine is exercised by hand — so
+      # pin the file list to assert the semantics directly.
+      it "is not pending when every migration file is applied" do
+        allow(runner).to receive(:migration_files)
+          .and_return([Rails.root.join("db/migrate/20260526000001_create_sample_schema.rb").to_s])
+
         expect(runner.pending?).to be(false)
       end
 
