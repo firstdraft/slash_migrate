@@ -19,7 +19,8 @@ module SlashMigrate
       rotate: %(<path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9"/><path d="M14 2v3h-3"/>),
       file: %(<path d="M9 1.5H4.5A1.5 1.5 0 0 0 3 3v10a1.5 1.5 0 0 0 1.5 1.5h7A1.5 1.5 0 0 0 13 13V5.5z"/><path d="M9 1.5V5.5H13"/>),
       terminal: %(<rect x="2" y="3" width="12" height="10" rx="1.5"/><path d="M5 7l2 1.5L5 10M8.5 10h2.5"/>),
-      key: %(<circle cx="6" cy="10" r="3"/><path d="M8.1 7.9 13 3M11 5l2 2M9.5 6.5L11.5 8.5"/>)
+      key: %(<circle cx="6" cy="10" r="3"/><path d="M8.1 7.9 13 3M11 5l2 2M9.5 6.5L11.5 8.5"/>),
+      lock: %(<rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/><path d="M5.5 7V5.2a2.5 2.5 0 0 1 5 0V7"/>)
     }.freeze
     FILLED_ICONS = %i[play].freeze
 

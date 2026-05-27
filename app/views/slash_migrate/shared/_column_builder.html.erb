@@ -2,6 +2,7 @@
     Locals: tables: (existing table names for reference pickers),
     self_option: (offer a "(this table)" self-reference option — new tables only). %>
 <% self_option = local_assigns.fetch(:self_option, false) %>
+<% auto_columns = local_assigns.fetch(:auto_columns, false) %>
 <div class="col-heads">
   <div class="col-head">Name</div>
   <div class="col-head">Type</div>
@@ -10,6 +11,22 @@
   <div class="col-head">Index</div>
   <div></div>
 </div>
+<% if auto_columns %>
+  <%# id and the timestamps come with every create_table, so show them filled in
+      but locked — students see what Rails adds without us spelling it out. These
+      controls are disabled and unnamed: never submitted, and the builder writes
+      id and t.timestamps regardless. %>
+  <% [["id", "bigint", "primary key"], ["created_at", "datetime", "no index"], ["updated_at", "datetime", "no index"]].each do |name, type, index_note| %>
+    <div class="col-row is-locked">
+      <input type="text" class="input mono" value="<%= name %>" disabled>
+      <select class="select" disabled><option><%= type %></option></select>
+      <select class="select" disabled><option>NOT NULL</option></select>
+      <input type="text" class="input mono" value="—" disabled>
+      <select class="select" disabled><option><%= index_note %></option></select>
+      <span class="lock-cell" title="Added automatically by Rails"><%= sm_icon(:lock) %></span>
+    </div>
+  <% end %>
+<% end %>
 <div data-model-form-target="rows">
   <%= render "slash_migrate/models/row", tables: tables, self_option: self_option %>
 </div>

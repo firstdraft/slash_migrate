@@ -22,7 +22,7 @@
     </div>
 
     <h2 class="section-title">Columns</h2>
-    <%= render "slash_migrate/shared/column_builder", tables: @existing_tables, self_option: true %>
+    <%= render "slash_migrate/shared/column_builder", tables: @existing_tables, self_option: true, auto_columns: true %>
   </div>
 
   <%= render "slash_migrate/shared/flow_arrow" %>

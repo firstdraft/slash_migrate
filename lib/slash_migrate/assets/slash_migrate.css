@@ -279,6 +279,14 @@ form.button_to { display:inline; margin:0; }
   border-radius:var(--radius-sm); background:var(--surface); margin-bottom:var(--gap-sm);
 }
 .col-row .input, .col-row .select { height:36px; }
+/* Locked auto-columns (id / created_at / updated_at): filled in but inactive,
+   so the controls read as columns the student can see but not edit. */
+.col-row.is-locked .input, .col-row.is-locked .select {
+  background:var(--surface-2); color:var(--muted); cursor:default;
+  -webkit-text-fill-color:var(--muted); border-color:var(--border-soft);
+}
+.lock-cell { display:inline-flex; align-items:center; justify-content:center; color:var(--muted-2); }
+.lock-cell svg { width:14px; height:14px; }
 .add-row-btn {
   width:100%; display:inline-flex; align-items:center; justify-content:center; gap:var(--gap-sm);
   height:38px; border:1px dashed var(--border); background:transparent; color:var(--muted);
