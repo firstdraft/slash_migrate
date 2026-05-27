@@ -9,7 +9,7 @@ module SlashMigrate
         builder = described_class.new(name: "Article", columns: [
           Column.new(name: "title", type: "string", null: false),
           Column.new(name: "views_count", type: "integer", default: "0", null: false),
-          Column.new(name: "user", type: "references", null: false),
+          Column.new(name: "user", type: "references", null: false, to_table: "users"),
           Column.new(name: "slug", type: "string", index: "uniq")
         ])
         source = builder.migration_source
@@ -72,7 +72,7 @@ module SlashMigrate
           Column.new(name: "count", type: "integer"),
           Column.new(name: "price", type: "decimal", precision: "10", scale: "2"),
           Column.new(name: "nickname", type: "string", limit: "30"),
-          Column.new(name: "user", type: "references", null: false),
+          Column.new(name: "user", type: "references", null: false, to_table: "users"),
           Column.new(name: "slug", type: "string", index: "uniq")
         ])
 

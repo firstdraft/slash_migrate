@@ -41,7 +41,7 @@ module SlashMigrate
     attr_reader :name, :type, :default, :limit, :precision, :scale, :index
 
     def initialize(name:, type: "string", null: true, default: nil,
-      limit: nil, precision: nil, scale: nil, index: "", foreign_key: true, to_table: nil)
+      limit: nil, precision: nil, scale: nil, index: "", to_table: nil)
       @name = name.to_s.strip
       @type = type.to_s
       @null = null
@@ -50,7 +50,6 @@ module SlashMigrate
       @precision = presence(precision)
       @scale = presence(scale)
       @index = index.to_s
-      @foreign_key = foreign_key
       @to_table = presence(to_table)
     end
 
@@ -66,8 +65,11 @@ module SlashMigrate
       @null
     end
 
+    # A references column gets a foreign key only when it's pointed at a real
+    # target table; with no target it's just the _id column (plus its index),
+    # which always migrates cleanly even if no such table exists yet.
     def foreign_key?
-      @foreign_key
+      !@to_table.nil?
     end
 
     # References are indexed inline by Rails, so they never get a separate
@@ -121,7 +123,7 @@ module SlashMigrate
 
     def belongs_to_line
       options = []
-      options << "class_name: #{target_table.classify.inspect}" unless conventional_reference?
+      options << "class_name: #{@to_table.classify.inspect}" if foreign_key? && !conventional_reference?
       options << requiredness_option if requiredness_option
       options.empty? ? "belongs_to :#{name}" : "belongs_to :#{name}, #{options.join(", ")}"
     end
@@ -137,19 +139,15 @@ module SlashMigrate
       options = []
       options << "null: false" unless allow_null?
       if foreign_key?
-        options << (conventional_reference? ? "foreign_key: true" : "foreign_key: { to_table: :#{target_table} }")
+        options << (conventional_reference? ? "foreign_key: true" : "foreign_key: { to_table: :#{@to_table} }")
       end
       options
     end
 
-    # The table this reference points at: the explicit pick, or Rails' default
-    # inference from the column name when left blank.
-    def target_table
-      @to_table || name.pluralize
-    end
-
+    # A foreign key needs no to_table: when the chosen table is the one Rails
+    # would infer from the column name anyway.
     def conventional_reference?
-      target_table == name.pluralize
+      @to_table == name.pluralize
     end
 
     # Keep the association's optionality in step with the column's nullability:

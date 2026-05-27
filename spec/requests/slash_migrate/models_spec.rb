@@ -20,7 +20,7 @@ module SlashMigrate
           attributes: [
             {name: "title", type: "string", null: "not_null", default: "", index: ""},
             {name: "views_count", type: "integer", null: "not_null", default: "0", index: ""},
-            {name: "user", type: "references", null: "not_null", default: "", index: ""}
+            {name: "user", type: "references", null: "not_null", default: "", index: "", to_table: "users"}
           ]
         }
 

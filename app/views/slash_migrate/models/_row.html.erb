@@ -16,9 +16,11 @@
     <option value="not_null">NOT NULL</option>
   </select>
   <input type="text" name="attributes[][default]" placeholder="default" class="input mono" autocomplete="off" data-row-default>
-  <%# Shown only for reference columns (Stimulus swaps it with the default field). %>
-  <select name="attributes[][to_table]" class="select" title="References which table?" data-row-table style="display:none">
-    <option value="" data-ref-suggestion>→ matches name</option>
+  <%# Shown only for reference columns (Stimulus swaps it with the default field).
+      Only real tables are offered, so the foreign key can never point at one that
+      doesn't exist; "no foreign key" makes just the _id column. %>
+  <select name="attributes[][to_table]" class="select" title="Foreign key — which table does it reference?" data-row-table data-action="change->model-form#pickerTouched" style="display:none">
+    <option value="">no foreign key</option>
     <% if local_assigns[:self_option] %>
       <option value="<%= SlashMigrate::MigrationBuilder::SELF_TABLE %>" data-self-suggestion>→ this table</option>
     <% end %>

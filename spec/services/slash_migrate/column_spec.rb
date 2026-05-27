@@ -38,9 +38,9 @@ module SlashMigrate
           .to eq("t.decimal :price, precision: 10, scale: 2")
       end
 
-      it "renders a reference with null: false and foreign_key" do
+      it "renders a reference with no foreign key until a target table is picked" do
         expect(column(name: "user", type: "references", null: false).to_ruby)
-          .to eq("t.references :user, null: false, foreign_key: true")
+          .to eq("t.references :user, null: false")
       end
     end
 
@@ -56,9 +56,9 @@ module SlashMigrate
         expect(col.to_ruby).to eq("t.references :author, foreign_key: true")
       end
 
-      it "is conventional when no table is picked" do
+      it "omits the foreign key when no table is picked" do
         col = column(name: "user", type: "references")
-        expect(col.to_ruby).to eq("t.references :user, foreign_key: true")
+        expect(col.to_ruby).to eq("t.references :user")
       end
     end
 
