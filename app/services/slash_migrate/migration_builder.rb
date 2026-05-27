@@ -94,6 +94,7 @@ module SlashMigrate
 
       model_path = Rails.root.join("app/models", model_filename)
       unless model_path.exist?
+        model_path.dirname.mkpath # a namespaced model (app/models/admin/…) may need its dir
         File.write(model_path, model_source)
         written << model_path.relative_path_from(Rails.root).to_s
       end

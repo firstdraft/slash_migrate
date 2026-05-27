@@ -29,6 +29,9 @@ module SlashMigrate
       end
 
       path = migrate_dir.join("#{next_version}_#{@basename}.rb")
+      # A brand-new app has no db/migrate until its first migration — and that
+      # first migration is exactly what a student generates here — so create it.
+      migrate_dir.mkpath
       path.open(File::WRONLY | File::CREAT | File::EXCL) { |file| file.write(@source) }
       path.relative_path_from(Rails.root).to_s
     end

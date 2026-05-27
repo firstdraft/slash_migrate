@@ -26,5 +26,21 @@ module SlashMigrate
       expect { described_class.write(basename: "writer_spec_dup", source: "# second\n") }
         .to raise_error(described_class::DuplicateError, /already exists/)
     end
+
+    # A brand-new app has no db/migrate until its first migration — the very
+    # thing a student generates here. Point the writer at a dir that doesn't
+    # exist and confirm it's created rather than raising.
+    it "creates the migrate directory when the app doesn't have one yet" do
+      fresh = Rails.root.join("tmp", "writer_spec_fresh_#{SecureRandom.hex(4)}", "db", "migrate")
+      allow_any_instance_of(described_class).to receive(:migrate_dir).and_return(fresh)
+      expect(fresh).not_to exist
+
+      described_class.write(basename: "writer_spec_freshdir", source: "# fresh\n")
+
+      expect(fresh).to be_directory
+      expect(fresh.glob("*_writer_spec_freshdir.rb")).not_to be_empty
+    ensure
+      FileUtils.rm_rf(Rails.root.join("tmp").glob("writer_spec_fresh_*"))
+    end
   end
 end
