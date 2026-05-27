@@ -3,7 +3,7 @@
     <h1 class="page-title">Tables</h1>
     <p class="page-sub">The tables in this app's database. Open any one to inspect its columns, indexes, and foreign keys.</p>
   </div>
-  <%= link_to new_model_path, class: "btn btn-accent" do %><%= sm_icon(:plus) %> New model<% end %>
+  <%= link_to new_model_path, class: "btn btn-accent" do %><%= sm_icon(:plus) %> New table<% end %>
 </div>
 
 <% if @table_names.empty? %>
@@ -11,8 +11,8 @@
     <div class="empty">
       <div class="empty-art"><%= sm_icon(:database) %></div>
       <h3>No tables yet</h3>
-      <p>Once you create a model, its table shows up here. Start by giving it a name and a few columns.</p>
-      <%= link_to new_model_path, class: "btn btn-accent" do %><%= sm_icon(:plus) %> Create your first model<% end %>
+      <p>Once you create one, it shows up here. Start by giving it a name and a few columns.</p>
+      <%= link_to new_model_path, class: "btn btn-accent" do %><%= sm_icon(:plus) %> Create your first table<% end %>
     </div>
   </div>
 <% else %>

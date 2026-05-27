@@ -26,7 +26,7 @@
     <span class="nav-spacer"></span>
     <nav class="nav-links">
       <%= nav_link "Tables", root_path, :database, active: nav_section == :tables %>
-      <%= nav_link "New model", new_model_path, :plus, active: nav_section == :new %>
+      <%= nav_link "New table", new_model_path, :plus, active: nav_section == :new %>
       <%= nav_link "Migrations", migrations_path, :history, active: nav_section == :migrations %>
     </nav>
   </header>

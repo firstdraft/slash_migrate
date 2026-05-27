@@ -7,7 +7,7 @@ module SlashMigrate
         get "/rails/migrate/models/new"
 
         expect(response).to have_http_status(:ok)
-        expect(response.body).to include("New model")
+        expect(response.body).to include("New table")
       end
     end
 
