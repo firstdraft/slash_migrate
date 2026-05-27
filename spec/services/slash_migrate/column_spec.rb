@@ -116,5 +116,30 @@ module SlashMigrate
         expect(described_class.from_params(name: "title", type: "string", null: "", default: "", index: "").allow_null?).to be(true)
       end
     end
+
+    describe ".from_schema" do
+      def ar_column(table, name)
+        ActiveRecord::Base.connection.columns(table).find { |c| c.name == name }
+      end
+
+      # Rails types defaults differently across versions (8.0 → "0", 8.1 → 0),
+      # so the inspected value is normalized to a string. Either way it must
+      # render the same migration code.
+      it "normalizes a numeric default to a string" do
+        col = described_class.from_schema(ar_column("posts", "views_count"))
+        expect(col.default).to eq("0")
+        expect(col.to_ruby).to eq("t.integer :views_count, default: 0, null: false")
+      end
+
+      # A boolean default of false is the trap: Rails 8.1 surfaces it as the
+      # boolean `false`, which presence() would turn into nil and silently drop
+      # (8.0/SQLite reports nil to begin with, so the live value is version-
+      # dependent). Stub the column to test our handling of a false default
+      # directly, regardless of the Rails version under test.
+      it "keeps a boolean default of false rather than dropping it" do
+        ar = double(name: "admin", type: :boolean, null: false, default: false, sql_type_metadata: nil)
+        expect(described_class.from_schema(ar).to_ruby).to eq("t.boolean :admin, default: false, null: false")
+      end
+    end
   end
 end

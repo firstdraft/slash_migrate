@@ -33,8 +33,11 @@ module SlashMigrate
         expect(title.type).to eq(:string)
         expect(title.null).to be(false)
 
+        # Active Record types a column's default differently across Rails
+        # versions (8.0 → "0", 8.1 → 0); the browser only ever renders it as
+        # text, so assert on the string form.
         views = table.columns.find { |c| c.name == "views_count" }
-        expect(views.default).to eq(0)
+        expect(views.default.to_s).to eq("0")
       end
 
       it "exposes indexes" do
