@@ -43,15 +43,6 @@ module SlashMigrate
       expect(migration.migration_class_name).to eq("AddColumnsToArticles")
     end
 
-    it "lists references columns suffixed with _id for the UI to warn about" do
-      migration = described_class.new(table: "posts", columns: [
-        Column.new(name: "author_id", type: "references"),
-        Column.new(name: "body", type: "text")
-      ])
-
-      expect(migration.references_with_id_suffix).to eq(["author_id"])
-    end
-
     describe ".from_params" do
       it "resolves the self-table sentinel to the table being modified" do
         migration = described_class.from_params(table: "employees", rows: [

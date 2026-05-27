@@ -62,17 +62,6 @@ module SlashMigrate
       REFERENCE_TYPES.include?(type)
     end
 
-    # A references column whose name still carries a trailing _id — almost always
-    # a mistake, since references appends _id itself (user_id -> user_id_id).
-    def reference_with_id_suffix?
-      reference? && /_id\z/i.match?(name)
-    end
-
-    # The name with that redundant _id removed (what they probably meant).
-    def name_without_id_suffix
-      name.sub(/_id\z/i, "")
-    end
-
     def allow_null?
       @null
     end

@@ -17,7 +17,7 @@
   <div class="panel panel-pad">
     <div class="field">
       <label class="label" for="model_name">Model name</label>
-      <%= form.text_field :model_name, id: "model_name", placeholder: "e.g. Article", class: "input mono", autocomplete: "off" %>
+      <%= form.text_field :model_name, id: "model_name", placeholder: "e.g. Article", class: "input mono", autocomplete: "off", data: {action: "input->model-form#modelNameInput"} %>
       <p class="help-text">Singular, by Rails convention — it maps to a table named after the plural. <code>id</code>, <code>created_at</code>, and <code>updated_at</code> are added for you.</p>
     </div>
 

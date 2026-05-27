@@ -20,7 +20,7 @@
   <select name="attributes[][to_table]" class="select" title="References which table?" data-row-table style="display:none">
     <option value="" data-ref-suggestion>→ matches name</option>
     <% if local_assigns[:self_option] %>
-      <option value="<%= SlashMigrate::MigrationBuilder::SELF_TABLE %>">→ (this table)</option>
+      <option value="<%= SlashMigrate::MigrationBuilder::SELF_TABLE %>" data-self-suggestion>→ this table</option>
     <% end %>
     <% Array(tables).each do |table| %>
       <option value="<%= table %>">→ <%= table %></option>

@@ -105,22 +105,6 @@ module SlashMigrate
       end
     end
 
-    describe "#reference_with_id_suffix?" do
-      it "flags a references column still carrying _id" do
-        col = column(name: "user_id", type: "references")
-        expect(col.reference_with_id_suffix?).to be(true)
-        expect(col.name_without_id_suffix).to eq("user")
-      end
-
-      it "ignores a references column named conventionally" do
-        expect(column(name: "user", type: "references").reference_with_id_suffix?).to be(false)
-      end
-
-      it "ignores a plain column ending in _id" do
-        expect(column(name: "legacy_id", type: "integer").reference_with_id_suffix?).to be(false)
-      end
-    end
-
     describe ".from_params" do
       it "maps the not_null select and default" do
         col = described_class.from_params(name: "title", type: "string", null: "not_null", default: "x", index: "")
