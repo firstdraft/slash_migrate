@@ -12,9 +12,9 @@
     <%= render "slash_migrate/shared/breadcrumbs", trail: [{label: "Tables", url: root_path}, {label: @table.name}] %>
     <h1 class="page-title"><span class="mono"><%= @table.name %></span></h1>
     <p class="page-sub">
-      <%= columns.size %> column<%= "s" unless columns.size == 1 %> ·
-      <%= indexes.size %> index<%= "es" unless indexes.size == 1 %> ·
-      <%= foreign_keys.size %> foreign key<%= "s" unless foreign_keys.size == 1 %>
+      <%= pluralize(columns.size, "column") %> ·
+      <%= pluralize(indexes.size, "index", "indexes") %> ·
+      <%= pluralize(foreign_keys.size, "foreign key") %>
     </p>
   </div>
   <%= link_to new_table_column_path(@table.name), class: "btn btn-ghost" do %><%= sm_icon(:plus) %> Add columns<% end %>
