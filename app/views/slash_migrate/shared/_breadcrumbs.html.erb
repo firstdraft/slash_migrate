@@ -1,0 +1,12 @@
+<%# trail: array of {label:, url:} hashes, in order. An entry without :url renders
+    as the current (non-link) page. %>
+<nav class="crumbs" aria-label="Breadcrumb">
+  <% trail.each_with_index do |item, i| %>
+    <% if i > 0 %><span class="crumb-sep"><%= sm_icon(:chevron) %></span><% end %>
+    <% if item[:url] %>
+      <%= link_to item[:label], item[:url], class: "crumb-link" %>
+    <% else %>
+      <span class="crumb-current" aria-current="page"><%= item[:label] %></span>
+    <% end %>
+  <% end %>
+</nav>

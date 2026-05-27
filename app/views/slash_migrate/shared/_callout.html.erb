@@ -1,0 +1,12 @@
+<%#
+  Wrap content with: render layout: "slash_migrate/shared/callout", locals: { kind: "warn", title: "…" } do … end
+  kind: "info" | "warn" | "ok" | "err". title: optional.
+%>
+<% icon = {"info" => :info, "warn" => :warn, "ok" => :check, "err" => :x}.fetch(kind.to_s) %>
+<div class="callout callout-<%= kind %>">
+  <span class="callout-ico"><%= sm_icon(icon) %></span>
+  <div class="callout-body">
+    <% if local_assigns[:title].present? %><p class="callout-title"><%= title %></p><% end %>
+    <div class="callout-text"><%= yield %></div>
+  </div>
+</div>

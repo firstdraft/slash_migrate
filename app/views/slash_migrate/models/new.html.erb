@@ -1,47 +1,38 @@
-<div class="sm-page-head">
-  <h1>New model</h1>
-  <%= link_to "← All tables", root_path, class: "sm-link" %>
+<% content_for :page_class, "page-form" %>
+
+<div class="page-head">
+  <div>
+    <h1 class="page-title">New model</h1>
+    <p class="page-sub">Pick a name and add columns. The migration and model files appear live below as you type.</p>
+  </div>
 </div>
 
-<div class="sm-cols">
-  <div class="sm-panel">
-    <%= form_with url: models_path, method: :post,
-          data: {
-            controller: "model-form",
-            action: "input->model-form#scheduleRefresh change->model-form#scheduleRefresh",
-            "model-form-preview-url-value": preview_models_path
-          } do |form| %>
+<%= form_with url: models_path, method: :post, class: "stack",
+      data: {
+        controller: "model-form",
+        action: "input->model-form#scheduleRefresh change->model-form#scheduleRefresh",
+        "model-form-preview-url-value": preview_models_path
+      } do |form| %>
 
-      <label class="sm-label">Model name</label>
-      <%= form.text_field :model_name, placeholder: "e.g. Article",
-            class: "sm-input", autocomplete: "off" %>
-
-      <label class="sm-label" style="margin-top:1.25rem;">Columns</label>
-      <div data-model-form-target="rows">
-        <%= render "row", tables: @existing_tables %>
-      </div>
-
-      <template data-model-form-target="template">
-        <%= render "row", tables: @existing_tables %>
-      </template>
-
-      <div style="margin-top:.5rem;">
-        <button type="button" class="sm-btn-ghost" data-action="model-form#addRow">+ Add column</button>
-      </div>
-
-      <p class="sm-muted" style="margin-top:1rem;">
-        <code>id</code> and <code>created_at</code>/<code>updated_at</code> are added automatically.
-      </p>
-
-      <div style="margin-top:1rem;">
-        <%= form.submit "Create model", class: "sm-btn" %>
-      </div>
-    <% end %>
-  </div>
-
-  <div class="sm-panel sm-preview-panel">
-    <div id="sm-preview">
-      <%= render "preview" %>
+  <div class="panel panel-pad">
+    <div class="field">
+      <label class="label" for="model_name">Model name</label>
+      <%= form.text_field :model_name, id: "model_name", placeholder: "e.g. Article", class: "input mono", autocomplete: "off" %>
+      <p class="help-text">Singular, by Rails convention — it maps to a table named after the plural. <code>id</code>, <code>created_at</code>, and <code>updated_at</code> are added for you.</p>
     </div>
+
+    <h2 class="section-title">Columns</h2>
+    <%= render "slash_migrate/shared/column_builder", tables: @existing_tables %>
   </div>
-</div>
+
+  <%= render "slash_migrate/shared/flow_arrow" %>
+
+  <div id="sm-preview">
+    <%= render "preview" %>
+  </div>
+
+  <div class="actions-stack">
+    <%= form.submit "Create model & migration", class: "btn btn-accent" %>
+    <%= link_to "Reset", new_model_path, class: "btn btn-ghost" %>
+  </div>
+<% end %>

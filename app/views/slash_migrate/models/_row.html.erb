@@ -1,30 +1,30 @@
-<div class="sm-row" data-row>
-  <input type="text" name="attributes[][name]" placeholder="column name"
-         class="sm-input sm-row-name" autocomplete="off">
-  <select name="attributes[][type]" class="sm-input sm-row-type" data-action="model-form#typeChanged">
+<%# One column-row in the builder. The grid (.col-row) lays out the controls;
+    Stimulus (model-form) toggles the default input vs. the "references table"
+    picker, which share the fourth grid cell. %>
+<div class="col-row" data-row>
+  <input type="text" name="attributes[][name]" placeholder="name" class="input mono" autocomplete="off">
+  <select name="attributes[][type]" class="select" data-action="model-form#typeChanged">
     <% SlashMigrate::Column::TYPES.each do |type| %>
       <option value="<%= type %>"><%= type %></option>
     <% end %>
   </select>
-  <select name="attributes[][null]" class="sm-input sm-row-null" title="Nullability">
+  <select name="attributes[][null]" class="select" title="Nullability">
     <option value="">allow null</option>
     <option value="not_null">NOT NULL</option>
   </select>
-  <input type="text" name="attributes[][default]" placeholder="default"
-         class="sm-input sm-row-default" autocomplete="off" data-row-default>
-  <%# Shown only for reference columns (Stimulus toggles it with the default field). %>
-  <select name="attributes[][to_table]" class="sm-input sm-row-table" title="References which table?"
-          data-row-table style="display:none">
-    <option value="">references (matches name)</option>
+  <input type="text" name="attributes[][default]" placeholder="default" class="input mono" autocomplete="off" data-row-default>
+  <%# Shown only for reference columns (Stimulus swaps it with the default field). %>
+  <select name="attributes[][to_table]" class="select" title="References which table?" data-row-table style="display:none">
+    <option value="">→ matches name</option>
     <option value="<%= SlashMigrate::MigrationBuilder::SELF_TABLE %>">→ (this table)</option>
     <% Array(tables).each do |table| %>
       <option value="<%= table %>">→ <%= table %></option>
     <% end %>
   </select>
-  <select name="attributes[][index]" class="sm-input sm-row-index" title="Index">
+  <select name="attributes[][index]" class="select" title="Index">
     <option value="">no index</option>
     <option value="index">index</option>
     <option value="uniq">unique</option>
   </select>
-  <button type="button" class="sm-icon-btn" data-action="model-form#removeRow" title="Remove column">&times;</button>
+  <button type="button" class="btn-icon" data-action="model-form#removeRow" aria-label="Remove column"><%= sm_icon(:x) %></button>
 </div>

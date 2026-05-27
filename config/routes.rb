@@ -9,6 +9,13 @@ SlashMigrate::Engine.routes.draw do
         post :update_preview
       end
     end
+
+    resources :indexes, only: [:new, :create], param: :name do
+      post :preview, on: :collection
+      member do
+        post :drop
+      end
+    end
   end
 
   resources :models, only: [:new, :create] do

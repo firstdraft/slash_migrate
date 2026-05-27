@@ -1,0 +1,17 @@
+<%# The repeating column-row builder, shared by New model and Add columns.
+    Local: tables: (the existing table names offered to reference pickers). %>
+<div class="col-heads">
+  <div class="col-head">Name</div>
+  <div class="col-head">Type</div>
+  <div class="col-head">Null</div>
+  <div class="col-head">Default / ref</div>
+  <div class="col-head">Index</div>
+  <div></div>
+</div>
+<div data-model-form-target="rows">
+  <%= render "slash_migrate/models/row", tables: tables %>
+</div>
+<template data-model-form-target="template">
+  <%= render "slash_migrate/models/row", tables: tables %>
+</template>
+<button type="button" class="add-row-btn" data-action="model-form#addRow"><%= sm_icon(:plus) %> Add another column</button>

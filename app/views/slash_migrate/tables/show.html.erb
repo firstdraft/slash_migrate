@@ -1,35 +1,50 @@
 <%
-  primary_key = @table.primary_key
+  columns = @table.columns
   indexes = @table.indexes
+  foreign_keys = @table.foreign_keys
+  primary_key = @table.primary_key
   indexed_columns = indexes.flat_map(&:columns).uniq
 %>
 
-<p class="sm-muted"><%= link_to "← All tables", root_path, class: "sm-link" %></p>
-<div class="sm-page-head">
-  <h1><code><%= @table.name %></code></h1>
-  <%= link_to "+ Add columns", new_table_column_path(@table.name), class: "sm-btn-ghost" %>
+<div class="page-head">
+  <div>
+    <%= render "slash_migrate/shared/breadcrumbs", trail: [{label: "Tables", url: root_path}, {label: @table.name}] %>
+    <h1 class="page-title"><span class="mono"><%= @table.name %></span></h1>
+    <p class="page-sub">
+      <%= columns.size %> column<%= "s" unless columns.size == 1 %> ·
+      <%= indexes.size %> index<%= "es" unless indexes.size == 1 %> ·
+      <%= foreign_keys.size %> foreign key<%= "s" unless foreign_keys.size == 1 %>
+    </p>
+  </div>
+  <%= link_to new_table_column_path(@table.name), class: "btn btn-ghost" do %><%= sm_icon(:plus) %> Add columns<% end %>
 </div>
 
-<h2>Columns</h2>
-<div class="sm-panel">
-  <table>
+<h2 class="section-title">Columns</h2>
+<div class="panel">
+  <table class="table">
     <thead>
-      <tr><th>Name</th><th>Type</th><th>Null</th><th>Default</th><th></th><th></th></tr>
+      <tr><th>Name</th><th>Type</th><th>Null</th><th>Default</th><th>Notes</th><th></th></tr>
     </thead>
     <tbody>
-      <% @table.columns.each do |column| %>
+      <% columns.each do |column| %>
         <tr>
-          <td><code><%= column.name %></code></td>
-          <td><%= column.type %> <span class="sm-muted">(<%= column.sql_type %>)</span></td>
-          <td><%= column.null ? "" : content_tag(:span, "NOT NULL", class: "sm-badge") %></td>
-          <td><%= column.default.nil? ? content_tag(:span, "—", class: "sm-muted") : tag.code(column.default) %></td>
+          <td><span class="mono"><%= column.name %></span></td>
+          <td class="col-type"><%= column.type %> <span class="sql">(<%= column.sql_type %>)</span></td>
           <td>
-            <% if column.name == primary_key %><span class="sm-badge">primary key</span><% end %>
-            <% if indexed_columns.include?(column.name) %><span class="sm-badge">indexed</span><% end %>
+            <% if column.null %><span class="muted">—</span><% else %><span class="badge is-notnull no-dot">NOT NULL</span><% end %>
+          </td>
+          <td class="col-default">
+            <% if column.default.nil? %><em>—</em><% else %><span class="mono"><%= column.default %></span><% end %>
           </td>
           <td>
+            <div class="badges">
+              <% if column.name == primary_key %><span class="badge is-pk">primary key</span><% end %>
+              <% if indexed_columns.include?(column.name) %><span class="badge is-indexed">indexed</span><% end %>
+            </div>
+          </td>
+          <td class="col-actions">
             <% unless column.name == primary_key %>
-              <%= link_to "Edit", edit_table_column_path(@table.name, column.name), class: "sm-link" %>
+              <%= link_to "Edit", edit_table_column_path(@table.name, column.name), class: "row-action" %>
             <% end %>
           </td>
         </tr>
@@ -38,43 +53,48 @@
   </table>
 </div>
 
-<h2>Indexes</h2>
-<div class="sm-panel">
-  <% if indexes.empty? %>
-    <span class="sm-muted">No indexes.</span>
-  <% else %>
-    <table>
-      <thead>
-        <tr><th>Name</th><th>Columns</th><th>Unique</th></tr>
-      </thead>
-      <tbody>
-        <% indexes.each do |index| %>
-          <tr>
-            <td><code><%= index.name %></code></td>
-            <td><%= Array(index.columns).join(", ") %></td>
-            <td><%= index.unique ? content_tag(:span, "unique", class: "sm-badge") : "" %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  <% end %>
+<h2 class="section-title">Indexes</h2>
+<div class="panel">
+  <table class="table">
+    <thead>
+      <tr><th>Name</th><th>Columns</th><th>Unique</th><th></th></tr>
+    </thead>
+    <tbody>
+      <% indexes.each do |index| %>
+        <tr>
+          <td><span class="mono"><%= index.name %></span></td>
+          <td><span class="mono"><%= Array(index.columns).join(", ") %></span></td>
+          <td><% if index.unique %><span class="badge is-unique">unique</span><% else %><span class="muted">—</span><% end %></td>
+          <td class="col-actions">
+            <%= button_to drop_table_index_path(@table.name, index.name), class: "row-action is-danger",
+                  data: {turbo_confirm: "Generate a migration to drop #{index.name}?"} do %>Drop<% end %>
+          </td>
+        </tr>
+      <% end %>
+      <tr>
+        <td colspan="4">
+          <%= link_to new_table_index_path(@table.name), class: "row-action" do %><%= sm_icon(:plus) %> Add index<% end %>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
-<h2>Foreign keys</h2>
-<div class="sm-panel">
-  <% if @table.foreign_keys.empty? %>
-    <span class="sm-muted">No foreign keys.</span>
+<h2 class="section-title">Foreign keys</h2>
+<div class="panel">
+  <% if foreign_keys.empty? %>
+    <div class="panel-pad muted">No foreign keys.</div>
   <% else %>
-    <table>
+    <table class="table">
       <thead>
-        <tr><th>Column</th><th>References</th><th>Name</th></tr>
+        <tr><th>Column</th><th>References</th><th>Constraint</th></tr>
       </thead>
       <tbody>
-        <% @table.foreign_keys.each do |fk| %>
+        <% foreign_keys.each do |fk| %>
           <tr>
-            <td><code><%= fk.column %></code></td>
-            <td><code><%= fk.to_table %></code></td>
-            <td class="sm-muted"><%= fk.name %></td>
+            <td><span class="mono"><%= fk.column %></span></td>
+            <td><span class="mono"><%= fk.to_table %></span></td>
+            <td class="muted mono"><%= fk.name %></td>
           </tr>
         <% end %>
       </tbody>

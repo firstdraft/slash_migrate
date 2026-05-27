@@ -1,0 +1,18 @@
+<%#
+  A dark terminal panel for real command output — deliberately plain (no syntax
+  tinting), the way `rails db:migrate` actually prints. Locals: command:, output:.
+  Optional: meta:, meta_style:.
+%>
+<div class="code-card is-terminal">
+  <div class="code-head">
+    <span class="code-filename">
+      <%= sm_icon(:terminal) %>
+      <span class="code-prompt">$</span>
+      <strong><%= command %></strong>
+    </span>
+    <% if local_assigns[:meta].present? %>
+      <span class="code-meta" style="<%= local_assigns[:meta_style] %>"><%= meta %></span>
+    <% end %>
+  </div>
+  <pre class="code-body"><%= terminal_body(output) %></pre>
+</div>

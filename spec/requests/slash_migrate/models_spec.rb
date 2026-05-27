@@ -24,12 +24,16 @@ module SlashMigrate
           ]
         }
 
+        # The preview renders syntax-highlighted, so read the code with its
+        # markup stripped back to plain text before asserting on the migration.
+        code = CGI.unescapeHTML(response.body.gsub(/<[^>]+>/, ""))
+
         expect(response).to have_http_status(:ok)
         expect(response.body).to include("turbo-stream")
-        expect(response.body).to include("create_table :articles")
-        expect(response.body).to include("t.string :title, null: false")
-        expect(response.body).to include("t.integer :views_count, default: 0, null: false")
-        expect(response.body).to include("t.references :user, null: false, foreign_key: true")
+        expect(code).to include("create_table :articles")
+        expect(code).to include("t.string :title, null: false")
+        expect(code).to include("t.integer :views_count, default: 0, null: false")
+        expect(code).to include("t.references :user, null: false, foreign_key: true")
         expect(response.body).not_to include("bin/rails generate")
 
         after = Dir.glob(Rails.root.join("db/migrate/*.rb")).length

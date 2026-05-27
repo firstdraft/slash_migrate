@@ -6,11 +6,11 @@ module SlashMigrate
     end
 
     def run
-      finish(runner.migrate, "Migrated.")
+      finish(runner.migrate, "Migrated.", "rails db:migrate")
     end
 
     def rollback
-      finish(runner.rollback, "Rolled back the last migration.")
+      finish(runner.rollback, "Rolled back the last migration.", "rails db:rollback")
     end
 
     def destroy
@@ -27,8 +27,9 @@ module SlashMigrate
 
     # Post/redirect/get: stash the (truncated) command output in the flash so a
     # refresh doesn't re-run the task.
-    def finish(result, message)
+    def finish(result, message, command)
       flash[:migrate_output] = result.output.to_s.last(3000)
+      flash[:migrate_command] = command
       if result.success?
         flash[:notice] = message
       else

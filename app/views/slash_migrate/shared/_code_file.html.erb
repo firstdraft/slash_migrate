@@ -1,0 +1,24 @@
+<%#
+  A light, syntax-highlighted code panel — the hero of every form screen.
+  Locals: path: (dim dir, e.g. "db/migrate/"), name: (filename or, when timestamped,
+  the part after the version), kind: (meta label), source: (raw Ruby string).
+  Optional: foot:, foot_kind: ("ok" | "warn" | "info"), timestamped: (bool — prepends
+  the live migration version + "_" before name).
+%>
+<% foot_kind = local_assigns.fetch(:foot_kind, "ok") %>
+<div class="code-card">
+  <div class="code-head">
+    <span class="code-filename">
+      <%= sm_icon(:file) %>
+      <span><span class="dim"><%= path %></span><% if local_assigns[:timestamped] %><span class="code-ts" data-timestamp title="The current UTC time as YYYYMMDDHHMMSS — this becomes the migration's version number"><%= migration_version %></span>_<% end %><%= name %></span>
+    </span>
+    <span class="code-meta"><%= kind %></span>
+  </div>
+  <pre class="code-body"><%= ruby_code_body(source) %></pre>
+  <% if local_assigns[:foot].present? %>
+    <div class="code-foot is-<%= foot_kind %>">
+      <%= sm_icon(foot_kind == "warn" ? :warn : foot_kind == "info" ? :info : :check) %>
+      <span><%= foot %></span>
+    </div>
+  <% end %>
+</div>

@@ -1,10 +1,10 @@
 <% if @error.present? %>
   <%= render layout: "slash_migrate/shared/callout", locals: {kind: "warn", title: "Can't build that yet"} do %><%= @error %><% end %>
 <% elsif !@migration.any? %>
-  <p class="preview-hint"><%= @hint || "Add a column to see the migration it will generate." %></p>
+  <p class="preview-hint"><%= @hint || "Pick a column to index to see the migration it will generate." %></p>
 <% else %>
   <%= render "slash_migrate/shared/code_file",
         path: "db/migrate/", name: @migration.migration_filename.sub(/\A\d+_/, ""), kind: "migration", timestamped: true,
         source: @migration.migration_source,
-        foot: "db:rollback undoes this by removing the new column(s).", foot_kind: "info" %>
+        foot: "db:rollback drops the index — your table data isn't touched.", foot_kind: "ok" %>
 <% end %>

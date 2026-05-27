@@ -1,58 +1,83 @@
-<div class="sm-page-head">
-  <h1>Edit <code><%= @column.name %></code> on <code><%= @table %></code></h1>
-  <%= link_to "← Back to #{@table}", table_path(@table), class: "sm-link" %>
+<% content_for :page_class, "page-form" %>
+
+<div class="page-head">
+  <div>
+    <%= render "slash_migrate/shared/breadcrumbs", trail: [{label: "Tables", url: root_path}, {label: @table, url: table_path(@table)}, {label: "Edit #{@column.name}"}] %>
+    <h1 class="page-title">Edit <span class="mono"><%= @column.name %></span> on <span class="mono"><%= @table %></span></h1>
+    <p class="page-sub">Change the column's name, type, nullability, or default. The migration below updates as you edit.</p>
+  </div>
 </div>
 
-<div class="sm-cols">
-  <div class="sm-panel">
-    <%= form_with url: table_column_path(@table, @column.name), method: :patch,
-          data: {
-            controller: "live-preview",
-            action: "input->live-preview#scheduleRefresh change->live-preview#scheduleRefresh",
-            "live-preview-url-value": update_preview_table_column_path(@table, @column.name)
-          } do |form| %>
+<%= form_with url: table_column_path(@table, @column.name), method: :patch, class: "stack",
+      data: {
+        controller: "live-preview",
+        action: "input->live-preview#scheduleRefresh change->live-preview#scheduleRefresh",
+        "live-preview-url-value": update_preview_table_column_path(@table, @column.name)
+      } do |form| %>
 
-      <label class="sm-label">Name</label>
-      <input type="text" name="column[name]" value="<%= @column.name %>" class="sm-input" autocomplete="off">
-
-      <label class="sm-label" style="margin-top:1rem;">Type</label>
-      <select name="column[type]" class="sm-input">
-        <% SlashMigrate::Column::TYPES.each do |type| %>
-          <option value="<%= type %>" <%= "selected" if type == @column.type %>><%= type %></option>
-        <% end %>
-      </select>
-
-      <label class="sm-label" style="margin-top:1rem;">Nullability</label>
-      <select name="column[null]" class="sm-input">
-        <option value="" <%= "selected" if @column.allow_null? %>>allow null</option>
-        <option value="not_null" <%= "selected" unless @column.allow_null? %>>NOT NULL</option>
-      </select>
-
-      <label class="sm-label" style="margin-top:1rem;">Default</label>
-      <input type="text" name="column[default]" value="<%= @column.default %>" placeholder="(none)" class="sm-input" autocomplete="off">
-
-      <div style="margin-top:1.25rem;">
-        <%= form.submit "Save changes", class: "sm-btn" %>
+  <div class="panel panel-pad">
+    <div class="form-col">
+      <div class="field">
+        <label class="label" for="col_name">Name</label>
+        <input type="text" id="col_name" name="column[name]" value="<%= @column.name %>" class="input mono" autocomplete="off">
+        <p class="help-text">Currently <span class="chip-soft"><%= @column.name %></span>. Renaming generates a <code>rename_column</code>.</p>
       </div>
-    <% end %>
-  </div>
-
-  <div class="sm-panel sm-preview-panel">
-    <div id="sm-edit-preview">
-      <%= render "update_preview" %>
+      <div class="field">
+        <label class="label" for="col_type">Type</label>
+        <select id="col_type" name="column[type]" class="select">
+          <% SlashMigrate::Column::TYPES.each do |type| %>
+            <option value="<%= type %>"<% if type == @column.type %> selected<% end %>><%= type %></option>
+          <% end %>
+        </select>
+        <p class="help-text">Currently <span class="chip-soft"><%= @column.type %><%= "(#{@column.limit})" if @column.limit %></span>. A type change isn't auto-reversible.</p>
+      </div>
+      <div class="field">
+        <label class="label" for="col_null">Nullability</label>
+        <select id="col_null" name="column[null]" class="select">
+          <option value=""<% if @column.allow_null? %> selected<% end %>>allow null</option>
+          <option value="not_null"<% unless @column.allow_null? %> selected<% end %>>NOT NULL</option>
+        </select>
+        <p class="help-text">Currently <span class="chip-soft"><%= @column.allow_null? ? "allows null" : "NOT NULL" %></span>.</p>
+      </div>
+      <div class="field">
+        <label class="label" for="col_default">Default</label>
+        <input type="text" id="col_default" name="column[default]" value="<%= @column.default %>" placeholder="(none)" class="input mono" autocomplete="off">
+        <p class="help-text">Currently <span class="chip-soft"><%= @column.default.nil? ? "no default" : @column.default %></span>. Leave blank to keep it that way.</p>
+      </div>
     </div>
   </div>
-</div>
 
-<div class="sm-panel" style="margin-top:1.5rem;">
-  <h2>Drop this column</h2>
-  <p class="sm-muted">Generates a migration to remove <code><%= @column.name %></code> from <code><%= @table %></code>.</p>
+  <%= render "slash_migrate/shared/flow_arrow" %>
 
-  <label class="sm-label"><code><%= @drop_migration.migration_class_name %></code></label>
-  <pre class="sm-code"><%= @drop_migration.migration_source %></pre>
-  <p class="sm-muted">✓ Reversible — the column's type is included, so <code>db:rollback</code> re-adds it.</p>
+  <div id="sm-edit-preview">
+    <%= render "update_preview" %>
+  </div>
 
-  <%= button_to "Drop #{@column.name}", drop_table_column_path(@table, @column.name),
-        method: :post, class: "sm-btn",
-        data: { turbo_confirm: "Generate a migration to drop #{@column.name}?" } %>
+  <div class="actions-stack">
+    <%= form.submit "Generate migration", class: "btn btn-accent" %>
+    <%= link_to "Reset", edit_table_column_path(@table, @column.name), class: "btn btn-ghost" %>
+  </div>
+<% end %>
+
+<div class="panel danger-zone" style="margin-top:var(--gap-lg)">
+  <div class="panel-head">
+    <div>
+      <h2>Drop this column</h2>
+      <div class="panel-sub">Generates a separate migration to remove <span class="mono"><%= @column.name %></span> from <span class="mono"><%= @table %></span>.</div>
+    </div>
+  </div>
+  <div class="panel-pad">
+    <div class="stack">
+      <%= render "slash_migrate/shared/code_file",
+            path: "db/migrate/", name: @drop_migration.migration_filename.sub(/\A\d+_/, ""), kind: "migration · preview", timestamped: true,
+            source: @drop_migration.migration_source,
+            foot: "db:rollback re-adds the column, but the data in it is gone for good — dropping a column deletes everything it held.", foot_kind: "warn" %>
+      <div class="actions-stack">
+        <%= button_to drop_table_column_path(@table, @column.name), method: :post, class: "btn btn-danger-soft",
+              data: {turbo_confirm: "Generate a migration to drop #{@column.name}?"} do %>
+          <%= sm_icon(:trash) %> Generate drop migration
+        <% end %>
+      </div>
+    </div>
+  </div>
 </div>

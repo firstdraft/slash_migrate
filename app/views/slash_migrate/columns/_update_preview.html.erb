@@ -1,20 +1,17 @@
 <% if @error.present? %>
-  <div class="sm-note sm-note-warn"><%= @error %></div>
+  <%= render layout: "slash_migrate/shared/callout", locals: {kind: "warn", title: "Can't build that yet"} do %><%= @error %><% end %>
 <% elsif @migration.nil? || !@migration.changed? %>
-  <p class="sm-muted"><%= @hint || "Change a value to see the migration it will generate." %></p>
+  <p class="preview-hint"><%= @hint || "Change a value to see the migration it will generate." %></p>
 <% else %>
-  <label class="sm-label"><code><%= @migration.migration_class_name %></code></label>
-  <pre class="sm-code"><%= @migration.migration_source %></pre>
-
-  <% if @migration.reversible_as_change? %>
-    <p class="sm-muted">✓ Reversible — a rename rolls back cleanly with <code>db:rollback</code>.</p>
-  <% else %>
-    <p class="sm-muted">A type change isn't auto-reversible, so this is written as explicit <code>up</code>/<code>down</code>.</p>
-  <% end %>
-
   <% if @migration.tightening_null? %>
-    <div class="sm-note sm-note-warn">
-      Adding <code>NOT NULL</code> will fail if existing rows hold NULL — backfill them (or set a default) first.
-    </div>
+    <%= render layout: "slash_migrate/shared/callout", locals: {kind: "warn", title: "This may fail on existing rows"} do %>
+      Adding <code>NOT NULL</code> fails if existing rows hold NULL — backfill them (or set a default) first.
+    <% end %>
   <% end %>
+
+  <%= render "slash_migrate/shared/code_file",
+        path: "db/migrate/", name: @migration.migration_filename.sub(/\A\d+_/, ""), kind: "migration", timestamped: true,
+        source: @migration.migration_source,
+        foot: (@migration.reversible_as_change? ? "A rename is safe to roll back — no data is lost." : "Not auto-reversible, so it's written as explicit up / down — and a type change can truncate or lose existing data."),
+        foot_kind: (@migration.reversible_as_change? ? "ok" : "warn") %>
 <% end %>

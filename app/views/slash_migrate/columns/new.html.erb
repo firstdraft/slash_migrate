@@ -1,39 +1,33 @@
-<div class="sm-page-head">
-  <h1>Add columns to <code><%= @table %></code></h1>
-  <%= link_to "← Back to #{@table}", table_path(@table), class: "sm-link" %>
-</div>
+<% content_for :page_class, "page-form" %>
 
-<div class="sm-cols">
-  <div class="sm-panel">
-    <%= form_with url: table_columns_path(@table), method: :post,
-          data: {
-            controller: "model-form",
-            action: "input->model-form#scheduleRefresh change->model-form#scheduleRefresh",
-            "model-form-preview-url-value": preview_table_columns_path(@table)
-          } do |form| %>
-
-      <label class="sm-label">New columns</label>
-      <div data-model-form-target="rows">
-        <%= render "slash_migrate/models/row", tables: @existing_tables %>
-      </div>
-
-      <template data-model-form-target="template">
-        <%= render "slash_migrate/models/row", tables: @existing_tables %>
-      </template>
-
-      <div style="margin-top:.5rem;">
-        <button type="button" class="sm-btn-ghost" data-action="model-form#addRow">+ Add column</button>
-      </div>
-
-      <div style="margin-top:1rem;">
-        <%= form.submit "Add to #{@table}", class: "sm-btn" %>
-      </div>
-    <% end %>
-  </div>
-
-  <div class="sm-panel sm-preview-panel">
-    <div id="sm-preview">
-      <%= render "preview" %>
-    </div>
+<div class="page-head">
+  <div>
+    <%= render "slash_migrate/shared/breadcrumbs", trail: [{label: "Tables", url: root_path}, {label: @table, url: table_path(@table)}, {label: "Add columns"}] %>
+    <h1 class="page-title">Add columns to <span class="mono"><%= @table %></span></h1>
+    <p class="page-sub">Append one or more columns to the existing table. A timestamped <span class="mono">add_column</span> migration will be created.</p>
   </div>
 </div>
+
+<%= form_with url: table_columns_path(@table), method: :post, class: "stack",
+      data: {
+        controller: "model-form",
+        action: "input->model-form#scheduleRefresh change->model-form#scheduleRefresh",
+        "model-form-preview-url-value": preview_table_columns_path(@table)
+      } do |form| %>
+
+  <div class="panel panel-pad">
+    <h2 class="section-title" style="margin-top:0">New columns</h2>
+    <%= render "slash_migrate/shared/column_builder", tables: @existing_tables %>
+  </div>
+
+  <%= render "slash_migrate/shared/flow_arrow" %>
+
+  <div id="sm-preview">
+    <%= render "preview" %>
+  </div>
+
+  <div class="actions-stack">
+    <%= form.submit "Generate migration", class: "btn btn-accent" %>
+    <%= link_to "Reset", new_table_column_path(@table), class: "btn btn-ghost" %>
+  </div>
+<% end %>

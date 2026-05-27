@@ -1,31 +1,44 @@
-<div class="sm-page-head">
-  <h1>Migrations</h1>
-  <%= link_to "← All tables", root_path, class: "sm-link" %>
+<%
+  applied = @migrations.count(&:applied?)
+  pending = @migrations.size - applied
+%>
+
+<div class="page-head">
+  <div>
+    <h1 class="page-title">Migrations</h1>
+    <p class="page-sub">
+      <%= applied %> applied · <%= pending %> pending. This list mirrors the files in <span class="mono">db/migrate</span>.
+    </p>
+  </div>
+  <div class="row">
+    <% if @migrations.any?(&:applied?) %>
+      <%= button_to rollback_migrations_path, class: "btn btn-ghost",
+            data: {turbo_confirm: "Roll back the most recent migration? This reverses its changes."} do %>
+        <%= sm_icon(:rotate) %> Roll back last
+      <% end %>
+    <% end %>
+    <% if @pending %>
+      <%= button_to run_migrations_path, class: "btn btn-accent" do %><%= sm_icon(:play) %> Run pending<% end %>
+    <% end %>
+  </div>
 </div>
 
 <% if flash[:migrate_output].present? %>
-  <label class="sm-label">Output of the last command</label>
-  <pre class="sm-code"><%= flash[:migrate_output] %></pre>
+  <% failed = flash[:alert].present? %>
+  <div style="margin-bottom:var(--gap-lg)">
+    <%= render "slash_migrate/shared/terminal",
+          command: (flash[:migrate_command] || "rails db:migrate"),
+          output: flash[:migrate_output],
+          meta: (failed ? "exited 1" : "output"),
+          meta_style: (failed ? "color:#E8B07F" : nil) %>
+  </div>
 <% end %>
 
-<div class="sm-panel">
-  <div class="sm-page-head" style="margin-bottom:1rem;">
-    <h2 style="margin:0;">Status</h2>
-    <div style="display:flex; gap:.5rem;">
-      <% if @pending %>
-        <%= button_to "Run pending migrations", run_migrations_path, class: "sm-btn" %>
-      <% end %>
-      <% if @migrations.any?(&:applied?) %>
-        <%= button_to "Roll back last", rollback_migrations_path, class: "sm-btn-ghost",
-              data: { turbo_confirm: "Roll back the most recent migration? This reverses its changes." } %>
-      <% end %>
-    </div>
-  </div>
-
+<div class="panel">
   <% if @migrations.empty? %>
-    <p class="sm-muted">No migration files yet.</p>
+    <div class="panel-pad muted">No migration files yet. Create a model or add columns, and the migration shows up here.</div>
   <% else %>
-    <table>
+    <table class="table">
       <thead>
         <tr><th>Status</th><th>Version</th><th>Migration</th><th></th></tr>
       </thead>
@@ -33,23 +46,21 @@
         <% @migrations.each do |migration| %>
           <tr>
             <td>
-              <% if migration.applied? %>
-                <span class="sm-badge">up</span>
-              <% else %>
-                <span class="sm-badge sm-badge-pending">pending</span>
-              <% end %>
+              <span class="badge <%= migration.applied? ? "is-up" : "is-pending" %>"><%= migration.applied? ? "up" : "pending" %></span>
             </td>
-            <td><code><%= migration.version %></code></td>
-            <td><%= migration.name %></td>
-            <td>
+            <td><span class="mono muted"><%= migration.version %></span></td>
+            <td><span class="mono"><%= migration.name %></span></td>
+            <td class="col-actions">
               <% if migration.applied? %>
-                <button type="button" class="sm-btn-ghost" disabled
-                        title="This migration has been run. Roll it back first — deleting its file would orphan the schema_migrations record and leave the change unreversible.">
-                  Delete file
-                </button>
+                <span class="has-tip" tabindex="0">
+                  <button type="button" class="btn btn-sm btn-disabled" disabled><%= sm_icon(:trash) %> Delete file</button>
+                  <span class="tip">This migration has been run. Roll it back with <kbd>db:rollback</kbd> first — deleting its file would orphan the <kbd>schema_migrations</kbd> record and leave the change unreversible.</span>
+                </span>
               <% else %>
-                <%= button_to "Delete file", migration_path(migration.version), method: :delete, class: "sm-btn-ghost",
-                      data: { turbo_confirm: "Delete the “#{migration.name}” migration file? It hasn't been run." } %>
+                <%= button_to migration_path(migration.version), method: :delete, class: "btn btn-sm btn-ghost",
+                      data: {turbo_confirm: "Delete the “#{migration.name}” migration file? It hasn't been run."} do %>
+                  <%= sm_icon(:trash) %> Delete file
+                <% end %>
               <% end %>
             </td>
           </tr>
