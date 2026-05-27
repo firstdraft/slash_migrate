@@ -376,6 +376,9 @@ form.button_to { display:inline; margin:0; }
 /* ── Misc ────────────────────────────────────────────── */
 .chip-soft { font-family:var(--font-mono); font-size:0.92em; background:var(--surface-2); padding:1px 6px; border-radius:4px; color:var(--ink-2); }
 .row { display:flex; align-items:center; gap:var(--space-sm); }
-.danger-zone { border-color:var(--err-border); background:linear-gradient(180deg, #F9E7E1 0%, var(--surface) 60%); }
+.danger-zone { margin-top:var(--space-xl); border-color:var(--err-border); background:linear-gradient(180deg, #F9E7E1 0%, var(--surface) 60%); }
 .danger-zone .panel-head { border-bottom-color:#ECD0C5; }
 .danger-zone .panel-head h2 { color:var(--err); }
+/* Spacing tokens belong in the stylesheet, not in view inline styles, so a
+   future token rename can't silently drop them (see the --gap-* history). */
+.migrate-output { margin-bottom:var(--space-xl); }
