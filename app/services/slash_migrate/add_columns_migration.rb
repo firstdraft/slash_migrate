@@ -35,9 +35,8 @@ module SlashMigrate
       end
     end
 
-    def migration_filename
-      stem = @columns.one? ? "add_#{@columns.first.name}_to_#{@table}" : "add_columns_to_#{@table}"
-      "#{version}_#{stem}.rb"
+    def migration_basename
+      @columns.one? ? "add_#{@columns.first.name}_to_#{@table}" : "add_columns_to_#{@table}"
     end
 
     def migration_source
@@ -54,15 +53,7 @@ module SlashMigrate
     end
 
     def write!
-      path = Rails.root.join("db/migrate", migration_filename)
-      File.write(path, migration_source)
-      [path.relative_path_from(Rails.root).to_s]
-    end
-
-    private
-
-    def version
-      Time.now.utc.strftime("%Y%m%d%H%M%S")
+      [MigrationFileWriter.write(basename: migration_basename, source: migration_source)]
     end
   end
 end

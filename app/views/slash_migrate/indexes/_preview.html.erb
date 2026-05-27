@@ -4,7 +4,7 @@
   <p class="preview-hint"><%= @hint || "Pick a column to index to see the migration it will generate." %></p>
 <% else %>
   <%= render "slash_migrate/shared/code_file",
-        path: "db/migrate/", name: @migration.migration_filename.sub(/\A\d+_/, ""), kind: "migration", timestamped: true,
+        path: "db/migrate/", name: "#{@migration.migration_basename}.rb", kind: "migration", timestamped: true,
         source: @migration.migration_source,
         foot: "db:rollback drops the index — your table data isn't touched.", foot_kind: "ok" %>
 <% end %>

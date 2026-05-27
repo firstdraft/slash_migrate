@@ -34,9 +34,8 @@ module SlashMigrate
       end
     end
 
-    def migration_filename
-      stem = simple_rename? ? "rename_#{@original.name}_in_#{@table}" : "change_#{column_name}_in_#{@table}"
-      "#{version}_#{stem}.rb"
+    def migration_basename
+      simple_rename? ? "rename_#{@original.name}_in_#{@table}" : "change_#{column_name}_in_#{@table}"
     end
 
     def migration_source
@@ -54,9 +53,7 @@ module SlashMigrate
     end
 
     def write!
-      path = Rails.root.join("db/migrate", migration_filename)
-      File.write(path, migration_source)
-      [path.relative_path_from(Rails.root).to_s]
+      [MigrationFileWriter.write(basename: migration_basename, source: migration_source)]
     end
 
     private
@@ -108,10 +105,6 @@ module SlashMigrate
       statements << "change_column :#{@table}, :#{column_name}, :#{@original.type}" if type_changed?
       statements << "rename_column :#{@table}, :#{@desired.name}, :#{@original.name}" if renamed?
       statements
-    end
-
-    def version
-      Time.now.utc.strftime("%Y%m%d%H%M%S")
     end
   end
 end

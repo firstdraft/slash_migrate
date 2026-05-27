@@ -17,8 +17,8 @@ module SlashMigrate
       "RemoveIndexOn#{columns.map(&:camelize).join("And")}From#{@table.camelize}"
     end
 
-    def migration_filename
-      "#{version}_remove_index_on_#{columns.join("_and_")}_from_#{@table}.rb"
+    def migration_basename
+      "remove_index_on_#{columns.join("_and_")}_from_#{@table}"
     end
 
     def remove_statement
@@ -39,9 +39,7 @@ module SlashMigrate
     end
 
     def write!
-      path = Rails.root.join("db/migrate", migration_filename)
-      File.write(path, migration_source)
-      [path.relative_path_from(Rails.root).to_s]
+      [MigrationFileWriter.write(basename: migration_basename, source: migration_source)]
     end
 
     private
@@ -58,10 +56,6 @@ module SlashMigrate
     # the rollback regenerate the same one.
     def conventional_name?
       @index.name.to_s == "index_#{@table}_on_#{columns.join("_and_")}"
-    end
-
-    def version
-      Time.now.utc.strftime("%Y%m%d%H%M%S")
     end
   end
 end

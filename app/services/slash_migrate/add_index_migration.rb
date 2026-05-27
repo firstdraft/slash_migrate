@@ -28,8 +28,8 @@ module SlashMigrate
       "AddIndexOn#{@columns.map(&:camelize).join("And")}To#{@table.camelize}"
     end
 
-    def migration_filename
-      "#{version}_add_index_on_#{@columns.join("_and_")}_to_#{@table}.rb"
+    def migration_basename
+      "add_index_on_#{@columns.join("_and_")}_to_#{@table}"
     end
 
     def index_statement
@@ -50,9 +50,7 @@ module SlashMigrate
     end
 
     def write!
-      path = Rails.root.join("db/migrate", migration_filename)
-      File.write(path, migration_source)
-      [path.relative_path_from(Rails.root).to_s]
+      [MigrationFileWriter.write(basename: migration_basename, source: migration_source)]
     end
 
     private
@@ -65,10 +63,6 @@ module SlashMigrate
       else
         "[#{@columns.map { |column| ":#{column}" }.join(", ")}]"
       end
-    end
-
-    def version
-      Time.now.utc.strftime("%Y%m%d%H%M%S")
     end
   end
 end

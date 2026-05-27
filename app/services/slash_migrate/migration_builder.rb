@@ -57,8 +57,8 @@ module SlashMigrate
       "Create#{table_name.camelize}"
     end
 
-    def migration_filename
-      "#{version}_create_#{table_name}.rb"
+    def migration_basename
+      "create_#{table_name}"
     end
 
     def model_filename
@@ -90,18 +90,15 @@ module SlashMigrate
     # Writes the migration and model into the host app. Skips an existing model
     # file rather than clobbering it. Returns the paths written, relative to root.
     def write!
-      migration_path = Rails.root.join("db/migrate", migration_filename)
+      written = [MigrationFileWriter.write(basename: migration_basename, source: migration_source)]
+
       model_path = Rails.root.join("app/models", model_filename)
-
-      File.write(migration_path, migration_source)
-      written = [migration_path]
-
       unless model_path.exist?
         File.write(model_path, model_source)
-        written << model_path
+        written << model_path.relative_path_from(Rails.root).to_s
       end
 
-      written.map { |path| path.relative_path_from(Rails.root).to_s }
+      written
     end
 
     private
@@ -112,10 +109,6 @@ module SlashMigrate
 
     def reference_columns
       @columns.select(&:reference?)
-    end
-
-    def version
-      Time.now.utc.strftime("%Y%m%d%H%M%S")
     end
   end
 end

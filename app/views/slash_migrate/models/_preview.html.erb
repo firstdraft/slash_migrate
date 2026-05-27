@@ -10,7 +10,7 @@
   <% end %>
 
   <%= render "slash_migrate/shared/code_file",
-        path: "db/migrate/", name: @builder.migration_filename.sub(/\A\d+_/, ""), kind: "migration", timestamped: true,
+        path: "db/migrate/", name: "#{@builder.migration_basename}.rb", kind: "migration", timestamped: true,
         source: @builder.migration_source,
         foot: "db:rollback undoes this by dropping the table.", foot_kind: "info" %>
 

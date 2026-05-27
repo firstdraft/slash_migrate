@@ -14,8 +14,8 @@ module SlashMigrate
       "Remove#{column.name.camelize}From#{@table.camelize}"
     end
 
-    def migration_filename
-      "#{version}_remove_#{column.name}_from_#{@table}.rb"
+    def migration_basename
+      "remove_#{column.name}_from_#{@table}"
     end
 
     def migration_source
@@ -29,15 +29,7 @@ module SlashMigrate
     end
 
     def write!
-      path = Rails.root.join("db/migrate", migration_filename)
-      File.write(path, migration_source)
-      [path.relative_path_from(Rails.root).to_s]
-    end
-
-    private
-
-    def version
-      Time.now.utc.strftime("%Y%m%d%H%M%S")
+      [MigrationFileWriter.write(basename: migration_basename, source: migration_source)]
     end
   end
 end

@@ -69,9 +69,9 @@
   <div class="panel-pad">
     <div class="stack">
       <%= render "slash_migrate/shared/code_file",
-            path: "db/migrate/", name: @drop_migration.migration_filename.sub(/\A\d+_/, ""), kind: "migration · preview", timestamped: true,
+            path: "db/migrate/", name: "#{@drop_migration.migration_basename}.rb", kind: "migration · preview", timestamped: true,
             source: @drop_migration.migration_source,
-            foot: "db:rollback re-adds the column, but the data in it is gone for good — dropping a column deletes everything it held.", foot_kind: "warn" %>
+            foot: @drop_caveat, foot_kind: "warn" %>
       <div class="actions-stack">
         <%= button_to drop_table_column_path(@table, @column.name), method: :post, class: "btn btn-danger-soft",
               data: {turbo_confirm: "Generate a migration to drop #{@column.name}?"} do %>

@@ -10,7 +10,7 @@
   <% end %>
 
   <%= render "slash_migrate/shared/code_file",
-        path: "db/migrate/", name: @migration.migration_filename.sub(/\A\d+_/, ""), kind: "migration", timestamped: true,
+        path: "db/migrate/", name: "#{@migration.migration_basename}.rb", kind: "migration", timestamped: true,
         source: @migration.migration_source,
         foot: (@migration.reversible_as_change? ? "A rename is safe to roll back — no data is lost." : "Not auto-reversible, so it's written as explicit up / down — and a type change can truncate or lose existing data."),
         foot_kind: (@migration.reversible_as_change? ? "ok" : "warn") %>

@@ -4,7 +4,7 @@
   <p class="preview-hint"><%= @hint || "Add a column to see the migration it will generate." %></p>
 <% else %>
   <%= render "slash_migrate/shared/code_file",
-        path: "db/migrate/", name: @migration.migration_filename.sub(/\A\d+_/, ""), kind: "migration", timestamped: true,
+        path: "db/migrate/", name: "#{@migration.migration_basename}.rb", kind: "migration", timestamped: true,
         source: @migration.migration_source,
         foot: "db:rollback undoes this by removing the new column(s).", foot_kind: "info" %>
 <% end %>

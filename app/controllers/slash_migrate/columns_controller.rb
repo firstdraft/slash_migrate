@@ -34,6 +34,7 @@ module SlashMigrate
       head :not_found and return unless @column
 
       @drop_migration = DropColumnMigration.new(table: @table, column: @column)
+      @drop_caveat = drop_caveat
     end
 
     def drop
@@ -81,6 +82,17 @@ module SlashMigrate
     def find_column
       ar_column = inspector.table(@table).columns.find { |column| column.name == params[:name] }
       ar_column && Column.from_schema(ar_column)
+    end
+
+    # remove_column re-adds the column on rollback, but not the index or foreign
+    # key that were on it — so say so when either is present.
+    def drop_caveat
+      table = inspector.table(@table)
+      dependents = []
+      dependents << "index" if table.indexes.any? { |index| Array(index.columns).include?(@column.name) }
+      dependents << "foreign key" if table.foreign_keys.any? { |fk| fk.column == @column.name }
+      base = "db:rollback re-adds the column, but the data in it is gone for good"
+      dependents.empty? ? "#{base}." : "#{base} — and its #{dependents.join(" and ")} won't be restored."
     end
 
     def desired_column
