@@ -9,15 +9,6 @@
     <% end %>
   <% end %>
 
-  <% if @builder.pluralized_input? %>
-    <%= render layout: "slash_migrate/shared/callout", locals: {kind: "warn", title: "Model names are singular"} do %>
-      Rails models are singular, so we'll generate <span class="mono"><%= @builder.model_class_name %></span> on the
-      <span class="mono"><%= @builder.table_name %></span> table. Want a plural class name? Teach Rails the inflection in
-      <span class="mono">config/initializers/inflections.rb</span> — see
-      <%= link_to "the inflections guide", "https://guides.rubyonrails.org/active_support_core_extensions.html#inflections", target: "_blank", rel: "noopener" %>.
-    <% end %>
-  <% end %>
-
   <%= render "slash_migrate/shared/code_file",
         path: "db/migrate/", name: @builder.migration_filename.sub(/\A\d+_/, ""), kind: "migration", timestamped: true,
         source: @builder.migration_source,

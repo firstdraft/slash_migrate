@@ -1,0 +1,13 @@
+<%# Helper text under the Model name field. Folds the singular-name warning in
+    here (rather than a preview callout) when the typed name is plural. Driven by
+    the live-preview Turbo Stream so it stays accurate via Rails' inflector. %>
+<% if @builder&.pluralized_input? %>
+  <p class="help-text is-warn">
+    Model names are singular, so we'll generate <code><%= @builder.model_class_name %></code> on the
+    <code><%= @builder.table_name %></code> table. Want a plural class name? Teach Rails the inflection in
+    <code>config/initializers/inflections.rb</code> — see
+    <%= link_to "the inflections guide", "https://guides.rubyonrails.org/active_support_core_extensions.html#inflections", target: "_blank", rel: "noopener" %>.
+  </p>
+<% else %>
+  <p class="help-text">Singular, by Rails convention — it maps to a table named after the plural. <code>id</code>, <code>created_at</code>, and <code>updated_at</code> are added for you.</p>
+<% end %>
