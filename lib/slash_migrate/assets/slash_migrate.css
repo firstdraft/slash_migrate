@@ -348,7 +348,9 @@ form.button_to { display:inline; margin:0; }
 .stack { display:flex; flex-direction:column; gap:var(--space-md); }
 .stack > .callout { margin:0; }
 /* Three downward chevrons that shimmer toward the live preview — an affordance,
-   not a button (no fill, no circle). */
+   not a button (no fill, no circle). Repeated across the width so the eye is
+   drawn down to the preview from wherever it's resting. */
+.flow-arrows { display:flex; justify-content:space-around; }
 .stack-link { display:flex; flex-direction:column; align-items:center; gap:1px; padding:4px 0; }
 .stack-link .chev {
   width:11px; height:11px;

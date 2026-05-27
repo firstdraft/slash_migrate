@@ -5,6 +5,7 @@
   primary_key = @table.primary_key
   fk_targets = foreign_keys.to_h { |fk| [fk.column, fk.to_table] }
 %>
+<% content_for :title, @table.name %>
 
 <div class="page-head">
   <div>

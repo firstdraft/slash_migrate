@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>slash_migrate</title>
+  <title><%= page_title %></title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
@@ -18,7 +18,7 @@
 </head>
 <body>
   <header class="nav">
-    <%= link_to root_path, class: "nav-brand" do %><em>/</em>rails<em>/</em>migrate<% end %>
+    <%= link_to root_path, class: "nav-brand" do %><%= nav_brand %><% end %>
     <span class="nav-spacer"></span>
     <nav class="nav-links">
       <%= nav_link "Tables", root_path, :database, active: nav_section == :tables %>

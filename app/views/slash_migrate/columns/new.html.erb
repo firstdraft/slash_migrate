@@ -1,10 +1,11 @@
 <% content_for :page_class, "page-form" %>
+<% content_for :title, "Add columns to #{@table}" %>
 
 <div class="page-head">
   <div>
     <%= render "slash_migrate/shared/breadcrumbs", trail: [{label: "Tables", url: root_path}, {label: @table, url: table_path(@table)}, {label: "Add columns"}] %>
     <h1 class="page-title">Add columns to <span class="mono"><%= @table %></span></h1>
-    <p class="page-sub">Append one or more columns to the existing table. A timestamped <span class="mono">add_column</span> migration will be created.</p>
+    <p class="page-sub">Add some columns to your existing table. The proposed <span class="mono">add_column</span> migration will appear below in real-time as you type.</p>
   </div>
 </div>
 

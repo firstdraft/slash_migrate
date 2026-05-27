@@ -1,10 +1,11 @@
 <% content_for :page_class, "page-form" %>
+<% content_for :title, "Edit #{@column.name} on #{@table}" %>
 
 <div class="page-head">
   <div>
     <%= render "slash_migrate/shared/breadcrumbs", trail: [{label: "Tables", url: root_path}, {label: @table, url: table_path(@table)}, {label: "Edit #{@column.name}"}] %>
     <h1 class="page-title">Edit <span class="mono"><%= @column.name %></span> on <span class="mono"><%= @table %></span></h1>
-    <p class="page-sub">Change the column's name, type, nullability, or default. The migration below updates as you edit.</p>
+    <p class="page-sub">Change the column's name, type, nullability, or default. The proposed migration will appear below in real-time as you edit.</p>
   </div>
 </div>
 

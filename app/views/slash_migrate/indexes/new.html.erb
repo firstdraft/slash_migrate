@@ -1,10 +1,11 @@
 <% content_for :page_class, "page-form" %>
+<% content_for :title, "Add index to #{@table}" %>
 
 <div class="page-head">
   <div>
     <%= render "slash_migrate/shared/breadcrumbs", trail: [{label: "Tables", url: root_path}, {label: @table, url: table_path(@table)}, {label: "Add index"}] %>
     <h1 class="page-title">Add index to <span class="mono"><%= @table %></span></h1>
-    <p class="page-sub">Pick one or more columns to index — useful for speeding up lookups on foreign keys, or columns you filter or sort by often.</p>
+    <p class="page-sub">Pick the columns you'd like to index — handy for speeding up lookups on foreign keys, or columns you filter or sort by often. The proposed migration will appear below in real-time as you type.</p>
   </div>
 </div>
 

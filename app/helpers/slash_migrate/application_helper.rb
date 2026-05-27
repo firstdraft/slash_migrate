@@ -43,6 +43,29 @@ module SlashMigrate
       end
     end
 
+    # Where the engine is actually mounted, as the browser sees it (e.g.
+    # "/rails/migrate"). Read from the request's script_name so a host that
+    # mounts us somewhere non-standard is reflected verbatim, rather than
+    # trusting the configured default. Falls back to that default when there's
+    # no request to read (e.g. rendering outside the engine).
+    def mount_path
+      request&.script_name.presence || SlashMigrate.config.mount_path
+    end
+
+    # The mount path drawn as the nav brand: each "/" muted via <em> (see
+    # `.nav-brand em`) with the path segments between them in ink.
+    def nav_brand
+      safe_join(mount_path.split("/", -1), tag.em("/"))
+    end
+
+    # The document <title>: the name the current page set via `content_for
+    # :title`, so browser tabs, history, and bookmarks stay distinguishable.
+    # Falls back to the mount path (the plain-text form of the nav brand) for
+    # any page that doesn't set one.
+    def page_title
+      content_for(:title).presence || mount_path
+    end
+
     # The column types worth showing first, in teaching order. Anything else the
     # database supports follows, alphabetically.
     COMMON_COLUMN_TYPES = %w[string text integer boolean references datetime date decimal float].freeze

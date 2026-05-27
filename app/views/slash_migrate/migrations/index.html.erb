@@ -2,12 +2,13 @@
   applied = @migrations.count(&:applied?)
   pending = @migrations.size - applied
 %>
+<% content_for :title, "Migrations" %>
 
 <div class="page-head">
   <div>
     <h1 class="page-title">Migrations</h1>
     <p class="page-sub">
-      <%= applied %> applied · <%= pending %> pending. This list mirrors the files in <span class="mono">db/migrate</span>.
+      <%= applied %> applied · <%= pending %> pending. This list mirrors the files in your <span class="mono">db/migrate</span> folder.
     </p>
   </div>
   <div class="row">

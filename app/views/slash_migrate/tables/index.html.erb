@@ -1,7 +1,9 @@
+<% content_for :title, "Tables" %>
+
 <div class="page-head">
   <div>
     <h1 class="page-title">Tables</h1>
-    <p class="page-sub">The tables in this app's database. Open any one to inspect its columns, indexes, and foreign keys.</p>
+    <p class="page-sub">The tables in your app's database. Open any one to inspect its columns, indexes, and foreign keys.</p>
   </div>
   <%= link_to new_model_path, class: "btn btn-accent" do %><%= sm_icon(:plus) %> New table<% end %>
 </div>
