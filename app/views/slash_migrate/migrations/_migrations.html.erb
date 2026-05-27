@@ -1,0 +1,79 @@
+<%
+  applied = @migrations.count(&:applied?)
+  pending = @migrations.size - applied
+%>
+
+<div class="page-head">
+  <div>
+    <h1 class="page-title">Migrations</h1>
+    <p class="page-sub">
+      <%= applied %> applied · <%= pending %> pending. This list mirrors the files in your <span class="mono">db/migrate</span> folder.
+    </p>
+  </div>
+  <div class="row">
+    <% if @migrations.any?(&:applied?) %>
+      <%= button_to rollback_migrations_path, class: "btn btn-ghost",
+            data: {turbo_confirm: "Roll back the most recent migration? This reverses its changes."} do %>
+        <%= sm_icon(:rotate) %> Roll back last
+      <% end %>
+    <% end %>
+    <% if @pending %>
+      <%= button_to run_migrations_path, class: "btn btn-accent" do %><%= sm_icon(:play) %> Run pending<% end %>
+    <% end %>
+  </div>
+</div>
+
+<%# Feedback from the last run / rollback / delete, shown in place. Carried in
+    instance variables rather than the flash, so large command output never
+    rides through the session cookie. %>
+<% if @command %>
+  <div class="migrate-output">
+    <%= render "slash_migrate/shared/terminal",
+          command: @command,
+          output: @result.output,
+          meta: (@result.success? ? "output" : "exited 1"),
+          meta_style: (@result.success? ? nil : "color:#E8B07F") %>
+  </div>
+<% elsif @result %>
+  <div class="migrate-output">
+    <%= render layout: "slash_migrate/shared/callout", locals: {kind: @result.success? ? "ok" : "warn"} do %>
+      <%= @result.output %>
+    <% end %>
+  </div>
+<% end %>
+
+<div class="panel">
+  <% if @migrations.empty? %>
+    <div class="panel-pad muted">No migration files yet. Create a model or add columns, and the migration shows up here.</div>
+  <% else %>
+    <table class="table">
+      <thead>
+        <tr><th>Status</th><th>Version</th><th>Migration</th><th></th></tr>
+      </thead>
+      <tbody>
+        <% @migrations.each do |migration| %>
+          <tr>
+            <td>
+              <span class="badge <%= migration.applied? ? "is-up" : "is-pending" %>"><%= migration.applied? ? "up" : "pending" %></span>
+            </td>
+            <td><span class="mono muted"><%= migration.version %></span></td>
+            <td><span class="mono"><%= migration.name %></span></td>
+            <td class="col-actions">
+              <% if migration.applied? %>
+                <span class="has-tip" tabindex="0">
+                  <button type="button" class="btn btn-sm btn-disabled" disabled><%= sm_icon(:trash) %> Delete file</button>
+                  <span class="tip">This migration has been run. Roll it back with <kbd>db:rollback</kbd> first — deleting its file would orphan the <kbd>schema_migrations</kbd> record and leave the change unreversible.</span>
+                </span>
+              <% else %>
+                <%= button_to migration_path(migration.version), method: :delete, class: "btn btn-sm btn-ghost",
+                      data: {turbo_confirm: "Delete the “#{migration.name}” migration file? It hasn't been run."} do %>
+                  <%= sm_icon(:trash) %> Delete file
+                <% end %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</div>

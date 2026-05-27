@@ -1,0 +1,6 @@
+<%# Rendered for run / rollback / delete. The controller sends this with the
+    text/vnd.turbo-stream.html MIME so native Turbo form handling applies it —
+    no turbo-rails gem, no redirect, no flash. %>
+<turbo-stream action="update" target="sm-migrations">
+  <template><%= render "migrations" %></template>
+</turbo-stream>

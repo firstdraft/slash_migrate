@@ -1,22 +1,24 @@
 module SlashMigrate
   class MigrationsController < ApplicationController
     def index
-      @migrations = runner.status
-      @pending = runner.pending?
+      load_migrations
     end
 
     def run
-      finish(runner.migrate, "Migrated.", "rails db:migrate")
+      @result = runner.migrate
+      @command = "rails db:migrate"
+      stream_result
     end
 
     def rollback
-      finish(runner.rollback, "Rolled back the last migration.", "rails db:rollback")
+      @result = runner.rollback
+      @command = "rails db:rollback"
+      stream_result
     end
 
     def destroy
-      result = runner.delete(params[:version])
-      flash[result.success? ? :notice : :alert] = result.output
-      redirect_to migrations_path
+      @result = runner.delete(params[:version])
+      stream_result
     end
 
     private
@@ -25,17 +27,21 @@ module SlashMigrate
       @runner ||= MigrationRunner.new
     end
 
-    # Post/redirect/get: stash the (truncated) command output in the flash so a
-    # refresh doesn't re-run the task.
-    def finish(result, message, command)
-      flash[:migrate_output] = result.output.to_s.last(3000)
-      flash[:migrate_command] = command
-      if result.success?
-        flash[:notice] = message
-      else
-        flash[:alert] = "Command failed — see the output below."
-      end
-      redirect_to migrations_path
+    def load_migrations
+      @migrations = runner.status
+      @pending = runner.pending?
+    end
+
+    # Update the page in place with a Turbo Stream instead of redirecting and
+    # carrying the command output in the flash: that output can be large, and
+    # CookieStore (the Rails default) caps the session at 4 KB, so a redirect
+    # could overflow the cookie and crash the host app. The engine ships no
+    # turbo-rails, so the <turbo-stream> is written by hand (see stream.html.erb)
+    # and the MIME set explicitly here; native Turbo form handling applies it. A
+    # plain refresh re-issues the GET, so the task never re-runs.
+    def stream_result
+      load_migrations
+      render :stream, layout: false, content_type: "text/vnd.turbo-stream.html"
     end
   end
 end
