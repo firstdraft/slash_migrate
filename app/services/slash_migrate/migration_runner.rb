@@ -62,7 +62,13 @@ module SlashMigrate
     private
 
     def run(task)
-      output, process = Bundler.with_unbundled_env do
+      # db:migrate is part of the host app's OWN bundle, so reset to the env
+      # from before this process loaded Bundler with with_original_env — NOT
+      # with_unbundled_env. The latter strips the host's bundler config,
+      # including a custom BUNDLE_PATH (e.g. Codespaces installs the bundle under
+      # /home/student/.bundle); the child bin/rails then can't find gems there —
+      # notably a git-sourced gem — and dies with "is not yet checked out".
+      output, process = Bundler.with_original_env do
         Open3.capture2e({"RAILS_ENV" => Rails.env.to_s}, rails_bin, task, chdir: Rails.root.to_s)
       end
       Result.new(output: output, success: process.success?)

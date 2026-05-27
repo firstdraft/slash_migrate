@@ -78,6 +78,11 @@ module SlashMigrate
           ["== migrated ==\n", process]
         end
 
+        # Must reset to the host app's own bundle env (with_original_env), not a
+        # fully-unbundled one — with_unbundled_env strips a custom BUNDLE_PATH
+        # (Codespaces) and breaks a git-sourced gem. See MigrationRunner#run.
+        expect(Bundler).to receive(:with_original_env).and_call_original
+
         result = runner.migrate
 
         expect(result).to be_success
