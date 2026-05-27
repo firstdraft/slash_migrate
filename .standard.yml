@@ -1,0 +1,4 @@
+# The dummy app under spec/dummy is generated Rails scaffolding (a test host),
+# not part of the gem — don't hold it to the gem's style.
+ignore:
+  - "spec/dummy/**/*"
