@@ -18,11 +18,7 @@
 </head>
 <body>
   <header class="nav">
-    <%= link_to root_path, class: "nav-brand" do %>
-      <span class="nav-brand-mark">/</span>
-      <span class="nav-brand-name">slash<em>_</em>migrate</span>
-    <% end %>
-    <span class="dev-tag">development only</span>
+    <%= link_to root_path, class: "nav-brand" do %><em>/</em>rails<em>/</em>migrate<% end %>
     <span class="nav-spacer"></span>
     <nav class="nav-links">
       <%= nav_link "Tables", root_path, :database, active: nav_section == :tables %>
