@@ -20,7 +20,7 @@
       Only real tables are offered, so the foreign key can never point at one that
       doesn't exist; "no foreign key" makes just the _id column. %>
   <select name="attributes[][to_table]" class="select" title="Foreign key — which table does it reference?" data-row-table data-action="change->model-form#pickerTouched" style="display:none">
-    <option value="">no foreign key</option>
+    <option value="" disabled selected>Select a table</option>
     <% if local_assigns[:self_option] %>
       <option value="<%= SlashMigrate::MigrationBuilder::SELF_TABLE %>" data-self-suggestion>→ this table</option>
     <% end %>
