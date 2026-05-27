@@ -10,6 +10,7 @@ gem "sqlite3"
 gem "propshaft"
 
 group :development, :test do
+  gem "appraisal"
   gem "rspec-rails"
   gem "standard"
 end

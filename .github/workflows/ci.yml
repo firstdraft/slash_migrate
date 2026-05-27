@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    name: "rspec (Ruby ${{ matrix.ruby }}, Rails ${{ matrix.rails }})"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ["3.4", "4.0"]
+        rails: ["8.0", "8.1"]
+    env:
+      BUNDLE_GEMFILE: gemfiles/rails_${{ matrix.rails }}.gemfile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      # The dummy app's SQLite lives in a gitignored storage/ dir; create it so
+      # maintain_test_schema! can load db/schema.rb into a fresh test database.
+      - run: mkdir -p spec/dummy/storage
+      - run: bundle exec rspec
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+      - run: bundle exec standardrb
