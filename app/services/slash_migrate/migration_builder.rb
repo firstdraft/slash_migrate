@@ -53,6 +53,12 @@ module SlashMigrate
       name.present? && name != name.singularize
     end
 
+    # Names of any references columns the student suffixed with _id, so the UI can
+    # warn that references adds it for them.
+    def references_with_id_suffix
+      @columns.select(&:reference_with_id_suffix?).map(&:name)
+    end
+
     def migration_class_name
       "Create#{table_name.camelize}"
     end

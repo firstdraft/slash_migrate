@@ -62,6 +62,18 @@ module SlashMigrate
       end
     end
 
+    describe "#references_with_id_suffix" do
+      it "lists only references columns that still carry _id" do
+        builder = described_class.new(name: "Article", columns: [
+          Column.new(name: "user_id", type: "references"),
+          Column.new(name: "category", type: "references"),
+          Column.new(name: "title", type: "string")
+        ])
+
+        expect(builder.references_with_id_suffix).to eq(["user_id"])
+      end
+    end
+
     # The teaching promise: for columns both can express, our output is exactly
     # what `rails g model` would write. Guards against drift from Rails' style.
     describe "fidelity with rails g model" do

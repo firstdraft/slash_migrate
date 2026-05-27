@@ -18,6 +18,14 @@
     <% end %>
   <% end %>
 
+  <% @builder.references_with_id_suffix.each do |column| %>
+    <%= render layout: "slash_migrate/shared/callout", locals: {kind: "warn", title: "References don't take an _id"} do %>
+      A <span class="mono">references</span> column adds <span class="mono">_id</span> for you, so
+      <span class="mono"><%= column %></span> would make a <span class="mono"><%= column %>_id</span> column.
+      Name it <span class="mono"><%= column.sub(/_id\z/i, "") %></span> instead.
+    <% end %>
+  <% end %>
+
   <%= render "slash_migrate/shared/code_file",
         path: "db/migrate/", name: @builder.migration_filename.sub(/\A\d+_/, ""), kind: "migration", timestamped: true,
         source: @builder.migration_source,

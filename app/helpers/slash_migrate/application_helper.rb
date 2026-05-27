@@ -42,6 +42,24 @@ module SlashMigrate
       end
     end
 
+    # The column types worth showing first, in teaching order. Anything else the
+    # database supports follows, alphabetically.
+    COMMON_COLUMN_TYPES = %w[string text integer boolean references datetime date decimal float].freeze
+
+    # The column types this app's database actually supports, read from the
+    # adapter (so Postgres surfaces uuid/jsonb/etc., SQLite its smaller set), with
+    # the everyday types pinned to the top. `references` is a Rails association
+    # helper rather than a native type, so it's added unless asked otherwise
+    # (change_column can't target it). Note: virtual types a gem adds via the
+    # table-definition API — e.g. money-rails' monetize — aren't reported here.
+    def available_column_types(include_references: true)
+      native = ActiveRecord::Base.connection.native_database_types.keys.map(&:to_s) - ["primary_key"]
+      native << "references" if include_references
+      native.uniq!
+      common = COMMON_COLUMN_TYPES.select { |type| native.include?(type) }
+      common + (native - common).sort
+    end
+
     # The 14-digit UTC version a migration generated right now would carry. Shown
     # in preview filenames and ticked forward each second client-side, so students
     # see where that number comes from.

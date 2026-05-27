@@ -25,7 +25,7 @@
       <div class="field">
         <label class="label" for="col_type">Type</label>
         <select id="col_type" name="column[type]" class="select">
-          <% SlashMigrate::Column::TYPES.each do |type| %>
+          <% (available_column_types(include_references: false) | [@column.type]).each do |type| %>
             <option value="<%= type %>"<% if type == @column.type %> selected<% end %>><%= type %></option>
           <% end %>
         </select>

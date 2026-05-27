@@ -1,10 +1,13 @@
 <%# One column-row in the builder. The grid (.col-row) lays out the controls;
     Stimulus (model-form) toggles the default input vs. the "references table"
-    picker, which share the fourth grid cell. %>
+    picker, which share the fourth grid cell, and keeps the picker's first option
+    showing the table Rails would infer from the column name.
+    Local: self_option: include the "(this table)" self-reference option — only
+    useful when creating a new table (it isn't in the table list yet). %>
 <div class="col-row" data-row>
-  <input type="text" name="attributes[][name]" placeholder="name" class="input mono" autocomplete="off">
+  <input type="text" name="attributes[][name]" placeholder="name" class="input mono" autocomplete="off" data-action="input->model-form#nameInput">
   <select name="attributes[][type]" class="select" data-action="model-form#typeChanged">
-    <% SlashMigrate::Column::TYPES.each do |type| %>
+    <% available_column_types.each do |type| %>
       <option value="<%= type %>"><%= type %></option>
     <% end %>
   </select>
@@ -15,8 +18,10 @@
   <input type="text" name="attributes[][default]" placeholder="default" class="input mono" autocomplete="off" data-row-default>
   <%# Shown only for reference columns (Stimulus swaps it with the default field). %>
   <select name="attributes[][to_table]" class="select" title="References which table?" data-row-table style="display:none">
-    <option value="">→ matches name</option>
-    <option value="<%= SlashMigrate::MigrationBuilder::SELF_TABLE %>">→ (this table)</option>
+    <option value="" data-ref-suggestion>→ matches name</option>
+    <% if local_assigns[:self_option] %>
+      <option value="<%= SlashMigrate::MigrationBuilder::SELF_TABLE %>">→ (this table)</option>
+    <% end %>
     <% Array(tables).each do |table| %>
       <option value="<%= table %>">→ <%= table %></option>
     <% end %>

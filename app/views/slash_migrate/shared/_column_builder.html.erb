@@ -1,17 +1,19 @@
 <%# The repeating column-row builder, shared by New model and Add columns.
-    Local: tables: (the existing table names offered to reference pickers). %>
+    Locals: tables: (existing table names for reference pickers),
+    self_option: (offer a "(this table)" self-reference option — new tables only). %>
+<% self_option = local_assigns.fetch(:self_option, false) %>
 <div class="col-heads">
   <div class="col-head">Name</div>
   <div class="col-head">Type</div>
   <div class="col-head">Null</div>
-  <div class="col-head">Default / ref</div>
+  <div class="col-head" data-model-form-target="optionHeader">Default</div>
   <div class="col-head">Index</div>
   <div></div>
 </div>
 <div data-model-form-target="rows">
-  <%= render "slash_migrate/models/row", tables: tables %>
+  <%= render "slash_migrate/models/row", tables: tables, self_option: self_option %>
 </div>
 <template data-model-form-target="template">
-  <%= render "slash_migrate/models/row", tables: tables %>
+  <%= render "slash_migrate/models/row", tables: tables, self_option: self_option %>
 </template>
 <button type="button" class="add-row-btn" data-action="model-form#addRow"><%= sm_icon(:plus) %> Add another column</button>
