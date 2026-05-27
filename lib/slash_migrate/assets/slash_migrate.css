@@ -78,13 +78,10 @@ a { color:var(--accent); }
 }
 .nav-brand {
   display:inline-flex; align-items:center;
-  background:var(--accent); color:#fff;
   font-family:var(--font-mono); font-size:var(--fs-base); font-weight:600; letter-spacing:-0.02em;
-  padding:6px 12px; border-radius:var(--radius-xs); text-decoration:none;
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.18), 0 1px 2px rgba(14,42,71,0.18);
+  color:var(--ink); text-decoration:none;
 }
-.nav-brand:hover { background:var(--accent-hover); }
-.nav-brand em { font-style:normal; opacity:0.55; }
+.nav-brand em { font-style:normal; color:var(--muted); }
 .nav-spacer { flex:1; }
 .nav-links { display:flex; gap:var(--gap-sm); align-items:center; }
 .nav-link {
@@ -184,7 +181,7 @@ button.row-action { background:none; border:0; padding:0; font:inherit; cursor:p
 .badge.is-up { background:var(--ok-bg); color:var(--ok); border-color:var(--ok-border); }
 .badge.is-pending { background:var(--warn-bg); color:var(--warn); border-color:var(--warn-border); }
 .badge.is-pk { background:var(--accent-soft); color:var(--accent-ink); border-color:#B7CDE7; }
-.badge.is-indexed { background:#E1E8F4; color:#2E498A; border-color:#C9D5E8; }
+.badge.is-fk { background:var(--accent-soft); color:var(--accent-ink); border-color:#B7CDE7; }
 .badge.is-notnull { background:var(--surface-3); color:var(--ink-2); border-color:var(--border); }
 .badge.is-unique { background:#DFE9E5; color:#2E5F4F; border-color:#C4D7CD; }
 .badge.is-err { background:var(--err-bg); color:var(--err); border-color:var(--err-border); }

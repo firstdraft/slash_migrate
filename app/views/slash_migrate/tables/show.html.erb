@@ -3,7 +3,7 @@
   indexes = @table.indexes
   foreign_keys = @table.foreign_keys
   primary_key = @table.primary_key
-  indexed_columns = indexes.flat_map(&:columns).uniq
+  fk_targets = foreign_keys.to_h { |fk| [fk.column, fk.to_table] }
 %>
 
 <div class="page-head">
@@ -39,7 +39,7 @@
           <td>
             <div class="badges">
               <% if column.name == primary_key %><span class="badge is-pk">primary key</span><% end %>
-              <% if indexed_columns.include?(column.name) %><span class="badge is-indexed">indexed</span><% end %>
+              <% if fk_targets[column.name] %><span class="badge is-fk">foreign key (<%= fk_targets[column.name] %>)</span><% end %>
             </div>
           </td>
           <td class="col-actions">
@@ -78,26 +78,4 @@
       </tr>
     </tbody>
   </table>
-</div>
-
-<h2 class="section-title">Foreign keys</h2>
-<div class="panel">
-  <% if foreign_keys.empty? %>
-    <div class="panel-pad muted">No foreign keys.</div>
-  <% else %>
-    <table class="table">
-      <thead>
-        <tr><th>Column</th><th>References</th><th>Constraint</th></tr>
-      </thead>
-      <tbody>
-        <% foreign_keys.each do |fk| %>
-          <tr>
-            <td><span class="mono"><%= fk.column %></span></td>
-            <td><span class="mono"><%= fk.to_table %></span></td>
-            <td class="muted mono"><%= fk.name %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  <% end %>
 </div>
