@@ -21,7 +21,7 @@ module SlashMigrate
         allow_any_instance_of(MigrationRunner).to receive(:migrate)
           .and_return(double(success?: true, output: big_output))
 
-        post "/rails/migrate/migrations/run"
+        post "/rails/migrate/migrations/run", headers: {"Accept" => "text/vnd.turbo-stream.html"}
 
         expect(response).to have_http_status(:ok)
         expect(response.media_type).to eq("text/vnd.turbo-stream.html")
@@ -35,7 +35,7 @@ module SlashMigrate
         allow_any_instance_of(MigrationRunner).to receive(:rollback)
           .and_return(double(success?: false, output: "boom"))
 
-        post "/rails/migrate/migrations/rollback"
+        post "/rails/migrate/migrations/rollback", headers: {"Accept" => "text/vnd.turbo-stream.html"}
 
         expect(response.media_type).to eq("text/vnd.turbo-stream.html")
         expect(response.body).to include("boom")
@@ -50,7 +50,7 @@ module SlashMigrate
       it "deletes a pending file and streams the refreshed list" do
         File.write(path, "class RemoveMeStream < ActiveRecord::Migration[8.0]\n  def change\n  end\nend\n")
 
-        delete "/rails/migrate/migrations/29990303000000"
+        delete "/rails/migrate/migrations/29990303000000", headers: {"Accept" => "text/vnd.turbo-stream.html"}
 
         expect(response.media_type).to eq("text/vnd.turbo-stream.html")
         expect(response.body).to include('target="sm-migrations"')

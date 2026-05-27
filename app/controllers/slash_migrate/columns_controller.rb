@@ -10,10 +10,10 @@ module SlashMigrate
     def preview
       @migration = AddColumnsMigration.from_params(table: @table, rows: params[:attributes])
       @hint = "Add a column to see the migration it will generate." unless @migration.any?
-      render :preview, layout: false
+      render_stream :preview
     rescue => e
       @error = e.message
-      render :preview, layout: false
+      render_stream :preview
     end
 
     def create
@@ -50,10 +50,10 @@ module SlashMigrate
       original = find_column
       @migration = original && EditColumnMigration.new(table: @table, original: original, desired: desired_column)
       @hint = "Change a value to see the migration it will generate." unless @migration&.changed?
-      render :update_preview, layout: false
+      render_stream :update_preview
     rescue => e
       @error = e.message
-      render :update_preview, layout: false
+      render_stream :update_preview
     end
 
     def update

@@ -11,6 +11,10 @@ module SlashMigrate
       end
     end
 
+    # These send Accept: text/vnd.turbo-stream.html and run with turbo-rails in
+    # the bundle, so they exercise the :turbo_stream format negotiation that
+    # broke a bare `render :preview` (it looked for a nonexistent
+    # preview.turbo_stream.erb). render_stream forces the html template.
     describe "POST /rails/migrate/models/preview" do
       it "streams the generated migration, including options the CLI can't express" do
         before = Dir.glob(Rails.root.join("db/migrate/*.rb")).length
@@ -22,7 +26,7 @@ module SlashMigrate
             {name: "views_count", type: "integer", null: "not_null", default: "0", index: ""},
             {name: "user", type: "references", null: "not_null", default: "", index: "", to_table: "users"}
           ]
-        }
+        }, headers: {"Accept" => "text/vnd.turbo-stream.html"}
 
         # The preview renders syntax-highlighted, so read the code with its
         # markup stripped back to plain text before asserting on the migration.
@@ -41,7 +45,7 @@ module SlashMigrate
       end
 
       it "shows a hint when no model name is given" do
-        post "/rails/migrate/models/preview", params: {model_name: ""}
+        post "/rails/migrate/models/preview", params: {model_name: ""}, headers: {"Accept" => "text/vnd.turbo-stream.html"}
 
         expect(response.body).to include("Enter a model name")
       end

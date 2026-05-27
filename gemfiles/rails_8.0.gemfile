@@ -11,6 +11,7 @@ group :development, :test do
   gem "appraisal"
   gem "rspec-rails"
   gem "standard"
+  gem "turbo-rails"
 end
 
 gemspec path: "../"

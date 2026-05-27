@@ -10,10 +10,10 @@ module SlashMigrate
     def preview
       @migration = build_migration
       @hint = "Pick a column to index to see the migration it will generate." unless @migration.any?
-      render :preview, layout: false
+      render_stream :preview
     rescue => e
       @error = e.message
-      render :preview, layout: false
+      render_stream :preview
     end
 
     def create

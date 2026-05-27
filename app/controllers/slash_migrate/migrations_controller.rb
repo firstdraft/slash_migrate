@@ -37,11 +37,12 @@ module SlashMigrate
     # CookieStore (the Rails default) caps the session at 4 KB, so a redirect
     # could overflow the cookie and crash the host app. The engine ships no
     # turbo-rails, so the <turbo-stream> is written by hand (see stream.html.erb)
-    # and the MIME set explicitly here; native Turbo form handling applies it. A
-    # plain refresh re-issues the GET, so the task never re-runs.
+    # and rendered via render_stream, which forces the html template and sets the
+    # turbo-stream MIME; native Turbo form handling applies it. A plain refresh
+    # re-issues the GET, so the task never re-runs.
     def stream_result
       load_migrations
-      render :stream, layout: false, content_type: "text/vnd.turbo-stream.html"
+      render_stream :stream, content_type: "text/vnd.turbo-stream.html"
     end
   end
 end

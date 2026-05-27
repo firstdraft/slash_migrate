@@ -16,11 +16,11 @@ module SlashMigrate
         @hint = "Enter a model name to see the migration it will generate."
       end
 
-      render :preview, layout: false
+      render_stream :preview
     rescue => e
       # Partial/invalid input shouldn't 500 the live preview; show the problem.
       @error = e.message
-      render :preview, layout: false
+      render_stream :preview
     end
 
     def create

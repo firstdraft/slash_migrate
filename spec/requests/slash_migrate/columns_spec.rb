@@ -18,5 +18,30 @@ module SlashMigrate
         expect(response.body).not_to include("be restored")
       end
     end
+
+    # With turbo-rails in the bundle, a turbo_stream Accept header negotiates the
+    # request to the :turbo_stream format; render_stream must still render the
+    # html template rather than 500 on a missing .turbo_stream.erb.
+    describe "live previews under a turbo_stream Accept header" do
+      let(:turbo) { {"Accept" => "text/vnd.turbo-stream.html"} }
+
+      it "streams the add-column preview" do
+        post "/rails/migrate/tables/posts/columns/preview",
+          headers: turbo,
+          params: {attributes: [{name: "blurb", type: "text", null: "", default: "", index: ""}]}
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("turbo-stream", ":blurb")
+      end
+
+      it "streams the edit-column preview" do
+        post "/rails/migrate/tables/posts/columns/body/update_preview",
+          headers: turbo,
+          params: {column: {type: "string", null: "not_null", default: ""}}
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("turbo-stream")
+      end
+    end
   end
 end
