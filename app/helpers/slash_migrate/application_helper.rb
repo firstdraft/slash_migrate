@@ -77,15 +77,14 @@ module SlashMigrate
       end
     end
 
-    # Renders Ruby source as the two grid children of a `.code-body`: a line-number
-    # gutter and the syntax-highlighted lines. A small, purpose-built tokenizer —
-    # enough to colour migrations and models, not a general Ruby parser.
+    # Renders Ruby source as the syntax-highlighted lines of a `.code-body`. A
+    # small, purpose-built tokenizer — enough to colour migrations and models,
+    # not a general Ruby parser.
     def ruby_code_body(source)
       lines = source.to_s.split("\n", -1)
       lines.pop if lines.last == "" # trailing newline shouldn't draw a blank line
-      gutter = lines.each_index.map { |i| "<span>#{i + 1}</span>" }.join
       rendered = lines.map { |line| "<span>#{highlight_ruby_line(line)}</span>" }.join
-      %(<div class="code-gutter">#{gutter}</div><div class="code-lines">#{rendered}</div>).html_safe
+      %(<div class="code-lines">#{rendered}</div>).html_safe
     end
 
     # Renders raw command output as plain monochrome lines (no gutter, no tinting)

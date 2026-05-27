@@ -305,9 +305,7 @@ form.button_to { display:inline; margin:0; }
 .code-filename .dim { color:var(--code-mute); }
 .code-filename svg { width:13px; height:13px; opacity:0.65; }
 .code-meta { font-family:var(--font-mono); font-size:var(--fs-sm); color:var(--code-mute); text-transform:uppercase; letter-spacing:0.08em; }
-.code-body { margin:0; padding:var(--gap) var(--gap) var(--gap) 0; font-family:var(--font-mono); font-size:var(--fs-base); line-height:1.65; color:var(--code-fg); overflow-x:auto; white-space:pre; display:grid; grid-template-columns:auto 1fr; }
-.code-gutter { text-align:right; padding:0 var(--gap); color:var(--code-comment); user-select:none; font-size:var(--fs-sm); border-right:1px solid var(--code-border); margin-right:var(--gap); }
-.code-gutter span { display:block; }
+.code-body { margin:0; padding:var(--gap); font-family:var(--font-mono); font-size:var(--fs-base); line-height:1.65; color:var(--code-fg); overflow-x:auto; white-space:pre; }
 .code-lines span { display:block; min-height:1.65em; }
 .code-lines em { font-style:normal; }
 .tk-k { color:var(--code-keyword); }
@@ -325,7 +323,6 @@ form.button_to { display:inline; margin:0; }
 .code-foot svg { width:14px; height:14px; flex:none; }
 /* terminal variant — dark, monochrome, no syntax tinting */
 .code-card.is-terminal { --code-bg:#0E2A47; --code-bg-2:#16365B; --code-fg:#E6EDF6; --code-mute:#8AA3BF; --code-comment:#6F8AAA; --code-border:rgba(255,255,255,0.10); }
-.code-card.is-terminal .code-body { grid-template-columns:1fr; padding:var(--gap); }
 .code-card.is-terminal .code-foot { background:rgba(255,255,255,0.04); }
 
 /* ── Callouts ────────────────────────────────────────── */
