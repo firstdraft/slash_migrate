@@ -1,7 +1,7 @@
 # Sample schema for exercising the engine against the dummy app. Intentionally
 # uses a range of column types, defaults, an index, and a foreign key so the
 # table browser (and later the migration builder) has realistic data to render.
-class CreateSampleSchema < ActiveRecord::Migration[8.1]
+class CreateSampleSchema < ActiveRecord::Migration[8.0]
   def change
     create_table :users do |t|
       t.string :email, null: false

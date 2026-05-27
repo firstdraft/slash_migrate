@@ -22,9 +22,12 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
-      # The dummy app's SQLite lives in a gitignored storage/ dir; create it so
-      # maintain_test_schema! can load db/schema.rb into a fresh test database.
+      # Build the dummy app's test database from db/schema.rb. Its storage/ dir
+      # is gitignored, so create it first, then prepare explicitly — loading the
+      # schema the same way on every Rails line, rather than relying on
+      # maintain_test_schema! (which doesn't auto-load a fresh DB on Rails 8.0).
       - run: mkdir -p spec/dummy/storage
+      - run: bin/rails db:test:prepare
       - run: bundle exec rspec
 
   lint:
