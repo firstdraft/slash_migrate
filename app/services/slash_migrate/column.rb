@@ -34,9 +34,8 @@ module SlashMigrate
         # Normalize to a String, matching the form-input path. Active Record
         # casts defaults differently across versions and adapters (Rails 8.0
         # hands back "0", 8.1 casts it to 0; a boolean default arrives as
-        # false), and the rest of this class — presence, downcase, literal
-        # interpolation — assumes a string. Without &.to_s, presence(false)
-        # would also silently drop a boolean's `default: false`.
+        # false), and the rest of this class — to_s.strip.presence, downcase,
+        # literal interpolation — assumes a string.
         default: ar_column.default&.to_s,
         limit: meta&.limit,
         precision: meta&.precision,
@@ -51,12 +50,12 @@ module SlashMigrate
       @name = name.to_s.strip
       @type = type.to_s
       @null = null
-      @default = presence(default)
-      @limit = presence(limit)
-      @precision = presence(precision)
-      @scale = presence(scale)
+      @default = default.to_s.strip.presence
+      @limit = limit.to_s.strip.presence
+      @precision = precision.to_s.strip.presence
+      @scale = scale.to_s.strip.presence
       @index = index.to_s
-      @to_table = presence(to_table)
+      @to_table = to_table.to_s.strip.presence
     end
 
     def blank?
@@ -188,11 +187,6 @@ module SlashMigrate
       else
         @default.inspect
       end
-    end
-
-    def presence(value)
-      string = value.to_s.strip
-      string.empty? ? nil : string
     end
   end
 end
